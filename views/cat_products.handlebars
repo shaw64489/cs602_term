@@ -29,7 +29,7 @@
                 <img class="pimage" src="/product_images/{{this.id}}/{{this.image}}" alt="">
             </a>
             <h3>{{this.title}}</h3>
-            <h4>${{this.price}}</h4>
+            <h4>${{toFixed this.price}}</h4>
             <a class="vd" href="/products/{{this.category}}/{{this.slug}}">View Details</a>
         </div>
     {{/each}}
