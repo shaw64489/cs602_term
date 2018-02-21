@@ -217,7 +217,7 @@ var cart = require('./routes/cart.js');
 var purchaseHistory = require('./routes/admin_purchaseHistory.js');
 var cusPurchaseHistory = require('./routes/purchaseHistory.js');
 
-
+//use
 app.use('/', routes);
 app.use('/admin/categories', adminCategories);
 app.use('/admin/products', adminProducts);
@@ -225,6 +225,7 @@ app.use('/products', products);
 app.use('/cart', cart);
 app.use('/admin/history', purchaseHistory);
 app.use('/history', cusPurchaseHistory);
+
 
 
 

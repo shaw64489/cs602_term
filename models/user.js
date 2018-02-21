@@ -9,17 +9,7 @@ const mongoose = require('mongoose');
 //use require keyword to refer and use bcrypt module
 const bcrypt = require('bcrypt');
 
-/*use require keyword to refer and use credentials module
-const credentials = require("../credentials.js");
 
-
-//connection string that specifies the database
-const dbUrl = 'mongodb://' + credentials.username +
-  ':' + credentials.password + '@' + credentials.host + ':' + credentials.port + '/' + credentials.database;
-
-//connection required for accessing the MongoDB database
-let connection = null;
-*/
 let model = null;
 
 
@@ -108,21 +98,5 @@ UserSchema.pre('save', function (next) {
 });
 
 
-
-/*model function is used for defining the model associated with the schema
-//model provides the constructor for creating instances of the document
-//export model via getModel
-module.exports.getModel =
-  () => {
-    if (connection == null) {
-      console.log("Creating connection and model...");
-      //creates the MongoDB connection object
-      connection = mongoose.createConnection(dbUrl);
-      //creates the model object, loading schema
-      model = connection.model("user2",
-        UserSchema);
-    };
-    return model;
-  }; */
 
   var User = module.exports = mongoose.model('user2', UserSchema);
