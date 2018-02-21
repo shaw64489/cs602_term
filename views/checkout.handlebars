@@ -1,0 +1,94 @@
+<div class="col-xs-12 col-md-3">
+    <h3>Categories</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="/products">All products</a>
+        </li>
+        <!-- loop through categories and link to category -->
+        {{#each categories}}
+        <!-- pull slug and title for li and href -->
+        <li class="list-group-item">
+            <a href="/products/{{this.slug}}">
+                {{this.title}}
+            </a>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+
+<div class="col-xs-12 col-md-9">
+
+    {{#if cart}}
+    <h3>{{title}}</h3>
+    <form method="post" action="/admin/products/add-product" enctype="multipart/form-data"></form>
+    <table class="table table-inverse alignmiddle">
+
+        <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th></th>
+            <th>Subtotal</th>
+        </tr>
+
+        {{#each cart}}
+
+        <tr>
+            <td>
+                <img class="cpi" src="{{this.image}}">
+            </td>
+            <td class="title">{{this.title}}
+
+            </td>
+            <td>${{this.price}}</td>
+            <td class="quantity">{{this.qty}}
+  
+            </td>
+            <td>
+                <a class="cart-link" href="/cart/update/{{this.title}}?action=add">&#43;</a>&nbsp;
+                <a class="cart-link" href="/cart/update/{{this.title}}?action=remove">&#8722;</a>&nbsp;
+                
+            </td>
+            <td class="total-p">${{toFixed (sub this.qty this.price)}}</td>
+            <td><a href="/cart/update/{{this.title}}?action=clear" style="font-size: .8em">Remove</a>&nbsp;</td>
+
+            
+        </tr>
+        
+        {{/each}}
+        <tr>
+            <td colspan="2" >
+                <a class="cartbtn btn btn-danger" href="/cart/clear">Clear cart</a>
+            </td>
+            
+            <td colspan="8">
+                <a class="cartbtn btn btn-success buynow" href="/cart/buy/{{user}}">Buy</a>
+            </td>
+         
+
+        </tr>
+
+    </table>
+
+
+    {{else}}
+
+    <h3 class="text-center">Your Cart is Empty</h3>
+    <img src="/images/emptycart_img.png">
+
+    {{/if}}
+</div>
+<script>
+    $(function () {
+
+        $('a.clearcart').on('click', function () {
+            if (!confirm('Confirm clear cart'))
+                return false;
+        });
+
+
+
+    });
+
+</script>

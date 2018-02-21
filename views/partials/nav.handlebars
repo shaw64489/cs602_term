@@ -1,0 +1,41 @@
+<nav class="navigation navbar-fixed-top navbar-dark bg-inverse">
+    <button class="navbar-toggler hidden-md-up pull-xs-right" type="button" data-toggle="collapse" data-target="#navbar">☰</button>
+    <div class="navbar-nav collapse navbar-toggleable-sm" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <p class="nav-logo">shaw</p>
+                <div class="nav-items clearfix">
+                    {{#unless currentUser}}
+                    <a class="nav-item nav-link" href="/register">Sign Up</a>
+                    {{/unless}}
+                    <a class="nav-item nav-link" href="/about">About</a>
+                    <a class="nav-item nav-link" href="/categories">Categories</a>
+                    {{#if currentUser}}
+                    <a class="nav-item nav-link" href="/admin">Admin</a>
+                    <a class="nav-item nav-link" href="/profile">My Profile</a>
+                    <a class="nav-item nav-link" href="/cart/checkout">Cart [
+                            {{#if cart }}
+                                {{cart.length}}
+                            {{else}}
+                                0
+                            {{/if}}
+                            ]</a>
+                    {{/if}}
+                    
+
+                </div>
+                
+
+
+
+                {{#if currentUser}}
+                <div class="log-nav">
+                    <img class="avatar img-circle hidden-xs-down" src="/images/robo-logo-white.png" alt="profile img">
+                    <a class="btn btn-info pull-md-right" href="/logout">Log out</a>
+                </div>
+                {{else}}
+                <a class="btn btn-info pull-md-right" href="/login">Login</a>
+                {{/if}}
+        </div>
+    </div>
+</nav>

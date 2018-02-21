@@ -1,0 +1,50 @@
+
+<div class="text-xs-left">
+<h2 class="page-title">Products</h2>
+<a href="/admin/products/add-product" class="btn btn-primary">Add a new product</a>
+<a href="/admin" class="btn btn-primary">Admin Menu</a>
+<br><br>
+
+{{#ifCond count '>' 0}}
+
+<table class="table table-inverse alignmiddle">
+
+    <thead>
+        <tr class="home">
+            <th>Product Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Category</th>
+            
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+       {{#each products}}
+        <tr>
+            <td>
+                {{#ifCond this.image '==' null }}
+                <img id="noimage" src="/images/noimage.png">
+                {{else}}
+                <img id="noimage" src="/product_images/{{this._id}}/{{this.image}}">
+                {{/ifCond}}
+            </td>
+            <td>{{this.title}}</td>
+            <td>${{toFixed this.price}}</td>
+            <td>{{this.quantity}}</td>
+            <td>{{ this.category }}</td>
+            
+            <td><a class="cat btn btn-info" href="/admin/products/edit-product/{{this._id}}">Edit</a></td>
+            <td><a class="cat confirmDeletion btn btn-info" href="/admin/products/delete-product/{{this._id}}">Delete</a></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{else}}
+<h3 class="text-center">There are no products.</h3>
+{{/ifCond}}
+</div>
+

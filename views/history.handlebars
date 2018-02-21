@@ -1,0 +1,28 @@
+<div class="text-xs-left">
+<h2 class="page-title">History</h2>
+<a href="/profile/" class="btn btn-primary">Go Back</a>
+<br><br>
+
+<table class="table table-inverse table-striped">
+
+    <thead>
+        <tr>
+            <th>History</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Purchase Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each purchase}}
+        <tr>
+            <td><a href="/history/{{this.id}}" class="btn btn-primary">{{this.buyer}}</a></td>
+            <td>{{this.title}}</td>
+
+            <td>{{this.quantity}}</td>
+            <td>{{this.date}}</td>
+        </tr>
+       {{/each}}
+    </tbody>
+</table>
+</div>

@@ -1,0 +1,28 @@
+<div class="text-xs-left">
+<h2 class="page-title">Categories</h2>
+<a href="/admin/categories/add-category" class="btn btn-primary">Add a new category</a>
+<a href="/admin" class="btn btn-primary">Admin Menu</a>
+<br><br>
+
+<table class="table table-inverse table-striped">
+
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each categories}}
+        <tr>
+            <td>{{this.title}}</td>
+            <td><a class="cat btn btn-info" href="/admin/categories/edit-category/{{this.id}}">Edit</a></td>
+
+            <td><a class="confirmDeletion cat btn btn-info" href="/admin/categories/delete-category/{{this.id}}">Delete</a></td>
+        </tr>
+       {{/each}}
+    </tbody>
+</table>
+</div>
+

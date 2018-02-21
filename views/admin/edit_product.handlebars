@@ -1,0 +1,127 @@
+<h2>{{title}}</h2>
+<div class="edit">
+<h2 class="page-title">Edit product</h2>
+<a href="/admin/products" class="btn btn-primary">Back to all products</a>
+<br><br>
+
+<form method="post" action="/admin/products/edit-product/{{id}}" enctype="multipart/form-data">
+    
+    <div class="form-group">
+        <label for="">Title</label>
+        <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Title">
+    </div>
+    
+    <div class="form-group">
+        <label for="">Description</label>
+        <textarea name="desc" class="form-control" cols="30" rows="10" placeholder="Description">{{desc}}</textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="">Category</label>
+        <select name="category" class="form-control">
+            {{#each categories}}
+                <option value="{{this.slug}}"
+                {{#ifCond this.slug '==' ../category}}
+                selected="selected"
+                {{/ifCond}}       
+                >{{this.title}}</option>
+            {{/each}}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="">Price</label>
+        <input type="text" class="form-control" name="price" value="{{price}}" placeholder="Price">
+    </div>
+    <div class="form-group">
+        <label for="">Quantity</label>
+        <input type="text" class="form-control" name="quantity" value="{{quantity}}" placeholder="Quantity">
+    </div>
+    
+    <div class="form-group">
+        <label for="">Current Image</label>
+        <p>
+            {{#ifCond image '==' ""}}
+            
+            <img id="noimage" src="/images/noimage.png" alt="">
+            {{else}}
+            <img id="noimage" src="/product_images/{{id}}/{{image}}" alt="">
+            {{/ifCond}} 
+        </p>
+    </div>
+    
+    <div class="form-group">
+        <label for="">Upload Image</label>
+        <input type="file" class="form-control" name="image" id="img">
+        <img src="#" id="imgPreview" alt="">
+    </div>
+    
+    <input type="hidden" name="pimage" value="{{image}}">
+    <button class="btn btn-default">Submit</button>
+</form>
+
+<hr>
+<h3 class="page-header">Gallery</h3>
+
+<ul class="gallery">
+    {{#each galleryImages}}
+    
+    {{#ifCond this '!=' "thumbs"}}
+   
+    <li>
+        <img src="/product_images/{{../id}}/gallery/thumbs/{{this}}" alt="">&nbsp;
+        <a class="confirmDeletion" href="/admin/products/delete-image/{{this}}?id={{../id}}">delete</a>
+    </li>
+    {{/ifCond}} 
+    {{/each}}
+</ul>
+
+<br><br>
+<form action="/admin/products/product-gallery/{{id}}" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm">
+    <div class="fallback">
+        <input type="file" name="file" multiple>
+        <input type="submit" value="Upload">
+    </div>
+</form>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.1.1/basic.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.1.1/dropzone.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.1.1/dropzone.js"></script>
+<script>
+    
+    /*
+    * Reference for img read and dropzone
+    * author: Vojislav Kovacevic
+    * 2017
+    */
+    // Preview image
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $("#imgPreview").attr('src', e.target.result).width(100).height(100);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    $("#img").change(function() {
+        readURL(this);
+    });
+    
+    // Dropzone
+    Dropzone.options.dropzoneForm = {
+        acceptedFiles: "image/*",
+        init: function() {
+            this.on("queuecomplete", function(file) {
+               setTimeout(function() {
+                location.reload()
+                }, 1000); 
+            });
+        }
+    }
+    
+</script>
