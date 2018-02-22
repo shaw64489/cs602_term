@@ -6,10 +6,10 @@
 module.exports = {
 	//host:     'localhost',
 	//port: 		'27017',
-	host:     'ds123728.mlab.com',
-	port: 		'23728',
-	username: 'shaw64489',
-	password: 'Cms64489',
+	host:     'xxxxxxxxxx',
+	port: 		'xxxxxxxx',
+	username: 'xxxxxxxxxx',
+	password: 'xxxxxxxxxxx',
 	database: 'employee'
 }
 
