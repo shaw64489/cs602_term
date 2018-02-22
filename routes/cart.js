@@ -11,6 +11,11 @@ var PurchaseHistory = require('../models/purchase_history');
 //retrieve Product model
 const User = require('../models/user');
 
+/*
+* Reference for cart sessions
+* author: Vojislav Kovacevic
+* 2017
+*/
 
 // GET add product to cart
 //add some product
@@ -81,6 +86,11 @@ router.get('/add/:product', (req, res) => {
 
         //console.log(req.session.cart);
         //redirect to previous request
+        req.session.sessionFlash = {
+            type: 'success',
+            message: 'Cart updated!'
+        }
+
         res.redirect('back')
 
     });

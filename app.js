@@ -161,21 +161,21 @@ Category.find(function (err, categories) {
     * 2017
 */
 // Express Validator middleware
-app.use(expressValidator({
-    errorFormatter: function (param, msg, value) {
-        var namespace = param.split('.')
-            , root = namespace.shift()
-            , formParam = root;
 
-        while (namespace.length) {
-            formParam += '[' + namespace.shift() + ']';
-        }
-        return {
-            param: formParam,
-            msg: msg,
-            value: value
-        };
-    },
+
+//express messages middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+    // if there's a flash message in the session request, make it available 
+    // in the response, then delete it
+    res.locals.sessionFlash = req.session.sessionFlash;
+    delete req.session.sessionFlash;
+    next();
+});
+
+// Express Validator middleware
+app.use(expressValidator({
+    
     //custom validate that is an image added
     customValidators: {
         isImage: function (value, filename) {
@@ -195,18 +195,6 @@ app.use(expressValidator({
         }
     }
 }));
-
-//express messages middleware
-app.use(require('connect-flash')());
-app.use(function (req, res, next) {
-    // if there's a flash message in the session request, make it available 
-    // in the response, then delete it
-    res.locals.sessionFlash = req.session.sessionFlash;
-    delete req.session.sessionFlash;
-    next();
-});
-
-
 
 // include routes
 var routes = require('./routes/index');

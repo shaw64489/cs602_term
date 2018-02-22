@@ -19,7 +19,7 @@ const User = require('../models/user');
 router.get('/:id', function (req, res) {
 
     var id = req.params.id;
-    console.log('what');
+
 
     PurchaseHistory.find({id: id},function (err, history) {
         if (err)

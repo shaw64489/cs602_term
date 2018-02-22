@@ -51,6 +51,11 @@ router.get('/add-product', function (req, res) {
 
 
 });
+/*
+* Reference for image path
+* author: Vojislav Kovacevic
+* 2017
+*/
 
 /*
  * POST add product
@@ -62,8 +67,8 @@ router.post('/add-product', function (req, res) {
     req.checkBody('title', 'Title must have a value.').notEmpty();
     req.checkBody('desc', 'Description must have a value.').notEmpty();
     req.checkBody('price', 'Price must have a value.').isDecimal();
-    req.checkBody('image', 'You must upload an image').isImage(imageFile);
     req.checkBody('quantity', 'Quantity must have a value.').isDecimal();
+
 
     var title = req.body.title;
     var slug = title.replace(/\s+/g, '-').toLowerCase();
@@ -73,6 +78,7 @@ router.post('/add-product', function (req, res) {
     var quantity = req.body.quantity;
 
     var errors = req.validationErrors();
+    console.log(errors[0].msg);
 
     if (errors) {
         Category.find(function (err, categories) {

@@ -16,7 +16,7 @@
 	<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.20/jquery.fancybox.min.css" />
 	<link rel='stylesheet' href='/stylesheets/form.css' />
-	
+
 	<script src="/javascripts/navScroll.js" type="text/javascript"></script>
 </head>
 
@@ -26,6 +26,14 @@
 	<!-- main body content container-->
 	<div class="main container text-xs-center">
 		{{> message}} 
+		{{#if errors}} 
+			{{#each errors}}
+				<div class="alert alert-danger">
+					{{this.msg}}
+				</div>
+			{{/each}}
+		{{/if}} 
+		
 		{{{body}}}
 
 

@@ -7,7 +7,9 @@
 var express = require('express');
 var router = express.Router();
 //use require keyword to refer and use bcrypt module
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
+//use require keyword to refer and use bcrypt module
+const bcrypt = require('bcryptjs');
 
 
 //import and use middleware module
@@ -144,6 +146,7 @@ router.post('/login', function (req, res, next) {
 
 // GET /register
 //add middleware for users logged in already
+//although this will be skipped because handlebars view checks
 router.get('/register', mid.loggedOut, function (req, res, next) {
   return res.render('register');
 });

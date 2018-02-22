@@ -7,7 +7,9 @@
 //use require keyword to refer and use mongoose module
 const mongoose = require('mongoose');
 //use require keyword to refer and use bcrypt module
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
+//use require keyword to refer and use bcrypt module
+const bcrypt = require('bcryptjs');
 
 
 let model = null;
