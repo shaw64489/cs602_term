@@ -234,9 +234,10 @@ app.use(function (err, req, res, next) {
     });
 });
 
-
+app.set('port', process.env.PORT || 5000);
 
 // listen on port 3000
-app.listen(3000, function () {
+app.listen(app.get('port'), function () {
     console.log('Express app listening on port 3000');
 });
+
