@@ -2,12 +2,14 @@ var express = require('express');
 
 var router = express.Router();
 
+/******************************
+********  Retrieve Models  ****
+******************************/
+
 //get Product model
 var Product = require('../models/product');
-
 //get Product model
 var PurchaseHistory = require('../models/purchase_history');
-
 //retrieve Product model
 const User = require('../models/user');
 
@@ -82,26 +84,21 @@ router.get('/add/:product', (req, res) => {
 
         }
 
-
-
-        //console.log(req.session.cart);
+        //success message display for cart update
         //redirect to previous request
         req.session.sessionFlash = {
             type: 'success',
             message: 'Cart updated!'
         }
-
         res.redirect('back')
-
     });
-
 });
 
 
 // GET checkout
-//add some product
 router.get('/checkout', (req, res) => {
 
+    //render checkout with session cart - user ID
     res.render('checkout', {
         title: 'Checkout Cart',
         cart: req.session.cart,
@@ -114,7 +111,6 @@ router.get('/checkout', (req, res) => {
 * GET update product
 */
 router.get('/update/:product', function (req, res) {
-
 
 
     var slug = req.params.product;
@@ -149,8 +145,8 @@ router.get('/update/:product', function (req, res) {
         type: 'success',
         message: 'Cart updated!'
     }
-    res.redirect('/cart/checkout');
 
+    res.redirect('/cart/checkout');
 });
 
 /*
@@ -239,11 +235,6 @@ router.get('/buy/:user', function (req, res) {
     res.redirect('../../profile');
 
 });
-
-
-
-
-
 
 
 //exports

@@ -21,56 +21,56 @@
     {{#if cart}}
     <h3>{{title}}</h3>
 
-    <div class = "Table">
-            <div class = "Row">
-                <p class = "Cell">Image</p>
-                <p class = "Cell">Title</p>
-                <p class = "Cell">Price</p>
-                <p class = "Cell">Quantity</p>
-                <p class = "Cell"></p>
-                <p class = "Cell">Subtotal</p>
-                
-            </div>
-            
+    <div class="Table">
+        <div class="Row">
+            <p class="Cell">Image</p>
+            <p class="Cell">Title</p>
+            <p class="Cell">Price</p>
+            <p class="Cell">Quantity</p>
+            <p class="Cell"></p>
+            <p class="Cell">Subtotal</p>
+
         </div>
 
-    <form class = "Table">
-            <div class = "Row">
-                <label class = "Cell" for = "Name">Name</label>
-                <input id = "Name" class = "Cell" type = "text">
-            </div>
-            <div class = "Row">
-                <label class = "Cell" for = "Birthplace">Birthplace</label>
-                <input id = "Birthplace" class = "Cell" type = "text">
-            </div>
-            <div class = "Row">
-                <label class = "Cell" for = "Newsletter">Subscribe to newsletter?</label>
-                <input id = "Newsletter" class = "Cell" type = "checkbox" checked>
-        </form>
+    </div>
+
+    <form class="Table">
+        <div class="Row">
+            <label class="Cell" for="Name">{{this.title}}</label>
+            <input id="Name" class="Cell" type="text">
+        </div>
+        <div class="Row">
+            <label class="Cell" for="Birthplace">Birthplace</label>
+            <input id="Birthplace" class="Cell" type="text">
+        </div>
+        <div class="Row">
+            <label class="Cell" for="Newsletter">Subscribe to newsletter?</label>
+            <input id="Newsletter" class="Cell" type="checkbox" checked>
+    </form>
 
     {{else}}
 
     <h3 class="text-center">Your Cart is Empty</h3>
 
     {{/if}}
-</div>
-<script>
-    $(function () {
+    </div>
+    <script>
+        $(function () {
 
-        $('a.clearcart').on('click', function () {
-            if (!confirm('Confirm clear cart'))
-                return false;
+            $('a.clearcart').on('click', function () {
+                if (!confirm('Confirm clear cart'))
+                    return false;
+            });
+
+
+
         });
 
-
-
-    });
-
-</script>
+    </script>
 
 
 
- <div class="col-xs-12 col-md-3">
+    <div class="col-xs-12 col-md-3">
         <h3>Categories</h3>
         <ul class="list-group">
             <li class="list-group-item">
@@ -89,66 +89,68 @@
     </div>
 
     <div class="col-xs-12 col-md-9">
- 
- {{#if cart}}
-<h3>{{title}}</h3>
-<table class="table table-inverse alignmiddle">
 
-    <tr>
-        <th>Image</th>
-        <th>Title</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th></th>
-        <th>Subtotal</th>
-    </tr>
+        {{#if cart}}
+        <h3>{{title}}</h3>
+        <table class="table table-inverse alignmiddle">
 
-    {{#each cart}}
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+                <th>Subtotal</th>
+            </tr>
 
-    <tr>
-        <td><img class="cpi" src="{{this.image}}"></td>
-        <td>{{this.title}}</td>
-        <td>${{this.price}}</td>
-        <td class="total-q">{{this.qty}}</td>
-        
-        <td>
-            <a href="/cart/update/{{this.title}}?action=add">+</a>&nbsp;
-            <a href="/cart/update/{{this.title}}?action=remove">-</a>&nbsp;
-            <a href="/cart/update/{{this.title}}?action=clear">Clear</a>&nbsp;
-        </td>
-        <td class="total-p">${{toFixed (sub this.qty this.price)}}</td>
+            {{#each cart}}
 
-        <td>{{total}}</td>
-    </tr>
-    {{/each}}
-    <tr>
-        <td colspan="5" align="right">
-            <a class="btn btn-danger" href="/cart/clear">Clear cart</a>
-        </td>
-        <td colspan="5" align="right">
-            <a class="btn btn-success buynow" href="/cart/buy">Buy</a>
-        </td>
-    </tr>
-    
+            <tr>
+                <td>
+                    <img class="cpi" src="{{this.image}}">
+                </td>
+                <td>{{this.title}}</td>
+                <td>${{this.price}}</td>
+                <td class="total-q">{{this.qty}}</td>
 
-</table>
+                <td>
+                    <a href="/cart/update/{{this.title}}?action=add">+</a>&nbsp;
+                    <a href="/cart/update/{{this.title}}?action=remove">-</a>&nbsp;
+                    <a href="/cart/update/{{this.title}}?action=clear">Clear</a>&nbsp;
+                </td>
+                <td class="total-p">${{toFixed (sub this.qty this.price)}}</td>
 
-{{else}}
+                <td>{{total}}</td>
+            </tr>
+            {{/each}}
+            <tr>
+                <td colspan="5" align="right">
+                    <a class="btn btn-danger" href="/cart/clear">Clear cart</a>
+                </td>
+                <td colspan="5" align="right">
+                    <a class="btn btn-success buynow" href="/cart/buy">Buy</a>
+                </td>
+            </tr>
 
-<h3 class="text-center">Your Cart is Empty</h3>
 
-{{/if}}
-</div>
-<script>
-$(function() {
-   
-    $('a.clearcart').on('click', function () {
-        if (!confirm('Confirm clear cart'))
-            return false;
-    });
-    
-   
-        
-});
+        </table>
 
-</script>
+        {{else}}
+
+        <h3 class="text-center">Your Cart is Empty</h3>
+
+        {{/if}}
+    </div>
+    <script>
+        $(function () {
+
+            $('a.clearcart').on('click', function () {
+                if (!confirm('Confirm clear cart'))
+                    return false;
+            });
+
+
+
+        });
+
+    </script>

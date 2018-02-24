@@ -95,7 +95,7 @@ router.post('/login', function (req, res, next) {
     //pass email and password from form and callback
 
 
-    //query to find user with matching emaill address
+    //query to find user with matching email address
     User.findOne({ email: req.body.email })
       //use exec to perform search and provide callback to process
       .exec(function (error, user) {

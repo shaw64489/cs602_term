@@ -67,7 +67,7 @@ a.pa {
 
 img.spi {
     width: 80%;
-    margin: 0 0 0 30%;
+    margin: 0 0 0 0%;
 }
 
 ul.gallery li {
@@ -83,6 +83,10 @@ img.cpi {
 table.alignmiddle td {
 	vertical-align: middle !important;
 	text-align: left;
+}
+
+.add {
+	width: 100%;
 }
 
 /*** All Products Page Styles ***/
@@ -113,12 +117,10 @@ ul.gallery {
     padding: 0;
 }
 
-ul.gallery li:first-child {
-    margin-left: 0;
-}
+
 
 ul.gallery li {
-    margin: 20px;
+    margin: 1em;
     display: inline-block;
     list-style: none;
 }
@@ -382,6 +384,11 @@ td .btn {
     background-size: 35px 35px;
     padding: 5px 0px 0 50px;
 }
+
+.btn.btn-primary:hover {
+	background-color: #5d963f;
+	border-color: #5d963f;
+ }
 
 /* foot new */
 

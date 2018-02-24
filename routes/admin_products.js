@@ -4,6 +4,9 @@ var mkdirp = require('mkdirp');
 var fs = require('fs-extra');
 var resizeImg = require('resize-img');
 
+/******************************
+********  Retrieve Models  ****
+******************************/
 
 // Get Product model
 var Product = require('../models/product');
@@ -15,12 +18,17 @@ var Category = require('../models/category');
  * GET products index
  */
 router.get('/', function (req, res) {
+
+    //used in view helper conditional statement
     var count = 0;
 
+    //find product count
     Product.count(function (err, c) {
         count = c;
     });
-    console.log(count);
+
+
+    //find all products and pass to view to render all products
     Product.find(function (err, products) {
         res.render('admin/products', {
             products: products,
@@ -29,23 +37,29 @@ router.get('/', function (req, res) {
     });
 });
 
+
 /*
  * GET add product
  */
 router.get('/add-product', function (req, res) {
+
 
     var title = "";
     var desc = "";
     var price = "";
     var quantity = "";
 
+    //if errors render add product page
+    //pass all categories for form dropdown list
     Category.find(function (err, categories) {
         res.render('admin/add_product', {
+
             title: title,
             desc: desc,
             categories: categories,
             price: price,
             quantity: quantity
+
         });
     });
 
@@ -62,14 +76,19 @@ router.get('/add-product', function (req, res) {
  */
 router.post('/add-product', function (req, res) {
 
+    //type of file input named image - if not equal to undefined
+    //it will either be provided image name or empty string
     var imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
 
+    //check request body values to make sure they have a value
+    //use validator to display error below if empty
     req.checkBody('title', 'Title must have a value.').notEmpty();
     req.checkBody('desc', 'Description must have a value.').notEmpty();
     req.checkBody('price', 'Price must have a value.').isDecimal();
     req.checkBody('quantity', 'Quantity must have a value.').isDecimal();
 
 
+    //store request body information based on user input
     var title = req.body.title;
     var slug = title.replace(/\s+/g, '-').toLowerCase();
     var desc = req.body.desc;
@@ -77,10 +96,14 @@ router.post('/add-product', function (req, res) {
     var category = req.body.category;
     var quantity = req.body.quantity;
 
+    //define errors based on validation errors
     var errors = req.validationErrors();
-    console.log(errors[0].msg);
+
 
     if (errors) {
+
+        //if errors render add product page
+        //pass all categories for form dropdown list
         Category.find(function (err, categories) {
             res.render('admin/add_product', {
                 errors: errors,
@@ -91,7 +114,10 @@ router.post('/add-product', function (req, res) {
                 quantity: quantity
             });
         });
+
     } else {
+
+        //determing if product already exists by user generated slug
         Product.findOne({
             slug: slug
         }, function (err, product) {
@@ -108,8 +134,10 @@ router.post('/add-product', function (req, res) {
                 });
             } else {
 
+                //update price to correct format
                 var price2 = parseFloat(price).toFixed(2);
 
+                //add product based on user input
                 var product = new Product({
                     title: title,
                     slug: slug,
@@ -120,10 +148,14 @@ router.post('/add-product', function (req, res) {
                     quantity: quantity
                 });
 
+                //save newly added product
+                //on save we have access to product ID
                 product.save(function (err) {
                     if (err)
                         return console.log(err);
 
+                    //create image directories based on product ID
+                    //gallery and thumbs
                     mkdirp('public/product_images/' + product._id, function (err) {
                         return console.log(err);
                     });
@@ -136,16 +168,25 @@ router.post('/add-product', function (req, res) {
                         return console.log(err);
                     });
 
+                    //if image file isnt empty
                     if (imageFile != "") {
+
+                        //store product image
                         var productImage = req.files.image;
+                        //store product image path
                         var path = 'public/product_images/' + product._id + '/' + imageFile;
 
+                        //pass image path and create the necessary directory
                         productImage.mv(path, function (err) {
                             return console.log(err);
                         });
                     }
 
-                    //req.flash('success', 'Product added!');
+                    //session flash success set
+                    req.session.sessionFlash = {
+                        type: 'success',
+                        message: 'Product Added!'
+                    }
                     res.redirect('/admin/products');
                 });
             }
@@ -161,26 +202,40 @@ router.get('/edit-product/:id', function (req, res) {
 
     var errors;
 
+    //create session error if there are errors
     if (req.session.errors)
         errors = req.session.errors;
+
+
     req.session.errors = null;
 
+    //retrieve all of the categories
     Category.find(function (err, categories) {
 
+        //find product by parameter ID
         Product.findById(req.params.id, function (err, p) {
+            //if error redirect to admin products list
             if (err) {
                 console.log(err);
                 res.redirect('/admin/products');
+
             } else {
+
+                //store gallery directory based on product ID
                 var galleryDir = 'public/product_images/' + p._id + '/gallery';
                 var galleryImages = null;
 
+                //read the product gallery directory and check for files
                 fs.readdir(galleryDir, function (err, files) {
                     if (err) {
                         console.log(err);
                     } else {
+
+                        //store gallery images
                         galleryImages = files;
 
+                        //render edit product page
+                        //pass current product information
                         res.render('admin/edit_product', {
                             title: p.title,
                             errors: errors,
@@ -197,9 +252,7 @@ router.get('/edit-product/:id', function (req, res) {
                 });
             }
         });
-
     });
-
 });
 
 /*
@@ -207,14 +260,19 @@ router.get('/edit-product/:id', function (req, res) {
  */
 router.post('/edit-product/:id', function (req, res) {
 
+    //type of file input named image - if not equal to undefined
+    //it will either be provided image name or empty string
     var imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
 
+    //check request body values to make sure they have a value
+    //use validator to display error below if empty
     req.checkBody('title', 'Title must have a value.').notEmpty();
     req.checkBody('desc', 'Description must have a value.').notEmpty();
     req.checkBody('price', 'Price must have a value.').isDecimal();
     req.checkBody('image', 'You must upload an image').isImage(imageFile);
     req.checkBody('quantity', 'Quantity must have a value.').isDecimal();
 
+    //store request body information based on user input
     var title = req.body.title;
     var slug = title.replace(/\s+/g, '-').toLowerCase();
     var desc = req.body.desc;
@@ -224,12 +282,18 @@ router.post('/edit-product/:id', function (req, res) {
     var id = req.params.id;
     var quantity = req.body.quantity;
 
+    //define errors based on validation errors
     var errors = req.validationErrors();
 
+    //if errors define error in session
+    //redirect to current edit product page
     if (errors) {
         req.session.errors = errors;
         res.redirect('/admin/products/edit-product/' + id);
     } else {
+
+        //check that product title is unique
+        //$ne selects the documents where the value of the field is not equal
         Product.findOne({
             slug: slug,
             _id: {
@@ -237,12 +301,22 @@ router.post('/edit-product/:id', function (req, res) {
             }
         }, function (err, p) {
             if (err)
+
                 console.log(err);
 
             if (p) {
-                req.flash('danger', 'Product title exists, choose another.');
+
+                //session flash warning if title exists
+                req.session.sessionFlash = {
+                    type: 'error',
+                    message: 'Product title exists, choose another.'
+                }
+
                 res.redirect('/admin/products/edit-product/' + id);
+
             } else {
+
+                //if no issues - find product by ID and update with user input
                 Product.findById(id, function (err, p) {
                     if (err)
                         console.log(err);
@@ -257,10 +331,13 @@ router.post('/edit-product/:id', function (req, res) {
                         p.image = imageFile;
                     }
 
+                    //save updates
                     p.save(function (err) {
                         if (err)
                             console.log(err);
 
+                        //if image file - product image - is not empty
+                        //remove current and update with new image
                         if (imageFile != "") {
                             if (pimage != "") {
                                 fs.remove('public/product_images/' + id + '/' + pimage, function (err) {
@@ -269,24 +346,29 @@ router.post('/edit-product/:id', function (req, res) {
                                 });
                             }
 
+                            //update image and image path
                             var productImage = req.files.image;
                             var path = 'public/product_images/' + id + '/' + imageFile;
 
+                            //pass image path and create the necessary directory
                             productImage.mv(path, function (err) {
                                 return console.log(err);
                             });
 
                         }
 
-                        //req.flash('success', 'Product edited!');
+                        //session flash success if successfully updated
+                        req.session.sessionFlash = {
+                            type: 'success',
+                            message: 'Product successfully edited!'
+                        }
+
                         res.redirect('/admin/products/edit-product/' + id);
                     });
-
                 });
             }
         });
     }
-
 });
 
 /*
@@ -294,19 +376,28 @@ router.post('/edit-product/:id', function (req, res) {
  */
 router.post('/product-gallery/:id', function (req, res) {
 
+    //get the file
     var productImage = req.files.file;
+    //store id from request parameter
     var id = req.params.id;
+    //specify path to the gallery
     var path = 'public/product_images/' + id + '/gallery/' + req.files.file.name;
+    //specify path to the thumbs
     var thumbsPath = 'public/product_images/' + id + '/gallery/thumbs/' + req.files.file.name;
 
+    //to save - pass path
     productImage.mv(path, function (err) {
         if (err)
             console.log(err);
 
+        //format and save thumbnails
+        //resize image
+        //synchronously - path path - width and height set
         resizeImg(fs.readFileSync(path), {
             width: 100,
             height: 100
         }).then(function (buf) {
+            //write thumbs pass thumbs path
             fs.writeFileSync(thumbsPath, buf);
         });
     });
@@ -320,9 +411,11 @@ router.post('/product-gallery/:id', function (req, res) {
  */
 router.get('/delete-image/:image', function (req, res) {
 
+    //retrieve and store original and thumb image paths - image passed as parameter
     var originalImage = 'public/product_images/' + req.query.id + '/gallery/' + req.params.image;
     var thumbImage = 'public/product_images/' + req.query.id + '/gallery/thumbs/' + req.params.image;
 
+    //remove original and thumb
     fs.remove(originalImage, function (err) {
         if (err) {
             console.log(err);
@@ -331,7 +424,13 @@ router.get('/delete-image/:image', function (req, res) {
                 if (err) {
                     console.log(err);
                 } else {
-                    //req.flash('success', 'Image deleted!');
+                    
+                    //session flash success if successfully deleted
+                    req.session.sessionFlash = {
+                        type: 'success',
+                        message: 'Image successfully deleted!'
+                    }
+
                     res.redirect('/admin/products/edit-product/' + req.query.id);
                 }
             });
@@ -346,9 +445,12 @@ router.get('/delete-image/:image', function (req, res) {
  */
 router.get('/delete-product/:id', function (req, res) {
 
+    //retrieve and store product ID from params
+    //store product image path
     var id = req.params.id;
     var path = 'public/product_images/' + id;
 
+    //remove product image directory and product
     fs.remove(path, function (err) {
         if (err) {
             console.log(err);
@@ -357,12 +459,17 @@ router.get('/delete-product/:id', function (req, res) {
                 console.log(err);
             });
 
-            //req.flash('success', 'Product deleted!');
+            //session flash success if successfully deleted
+            req.session.sessionFlash = {
+                type: 'success',
+                message: 'Product successfully deleted!'
+            }
+
             res.redirect('/admin/products');
         }
     });
 
 });
 
-// Exports
+// Export module
 module.exports = router;

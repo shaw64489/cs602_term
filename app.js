@@ -234,7 +234,7 @@ app.use(function (err, req, res, next) {
     });
 });
 
-app.set('port', process.env.PORT || 5000);
+app.set('port', process.env.PORT || 3000);
 
 // listen on port 3000
 app.listen(app.get('port'), function () {

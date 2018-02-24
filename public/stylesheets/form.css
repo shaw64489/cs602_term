@@ -1,3 +1,8 @@
+/*
+* Registration Form Design
+* Alex Devero
+*/
+
 body {
   font-family: 'Raleway', sans-serif;
     /*background: #e9e9e9;*/
@@ -66,7 +71,7 @@ body {
   
   .signup__container {
     position: relative;
-    top: 18em;
+    top: 16em;
     right: 0;
     left: 0;
     margin-right: auto;

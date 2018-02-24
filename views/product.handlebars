@@ -22,16 +22,33 @@
 
 
     <!-- Product Image display -->
+    <div class="col-xs-12 col-md-1"></div>
     <div class="col-xs-12 col-md-5">
-
+        
+        <h3>{{this.title}}</h3>
+        <br>
         <img class="spi" src="/product_images/{{p.id}}/{{p.image}}" alt="">
         <br>
+    </div>
+    <div class="col-xs-12 col-md-3">
+        <br>
+        <h3>Gallery</h3>
+        <ul class="gallery">
+            {{#each galleryImages}} {{#ifCond this '!=' "thumbs"}}
+
+            <li>
+                <a data-fancybox="gallery" href="/product_images/{{../p.id}}/gallery/{{this}}">
+                    <img src="/product_images/{{../p.id}}/gallery/thumbs/{{this}}" alt="">
+                </a>
+            </li>
+            {{/ifCond}} {{/each}}
+        </ul>
     </div>
     
     <!-- Product description and price -->
 </div>
 <div class="row">
-    <br><br>
+
 </div>
 <div class="row">
     <div class="col-xs-12 col-md-4"></div>
@@ -51,26 +68,18 @@
         </table>
         <p>
             {{#if currentUser}}
-            <a class="btn btn-info" href="/cart/add/{{p.slug}}">Add to cart</a>
+            <a class="btn btn-info add" href="/cart/add/{{p.slug}}">Add to cart</a>
             {{/if}}
         </p>
     </div>
+    
     <!--
     * Reference for gallery setup/fancybox
     * author: Vojislav Kovacevic
     * 2017
     -->
-    <div class="col-xs-12">
-        <ul class="gallery">
-            {{#each galleryImages}} {{#ifCond this '!=' "thumbs"}}
+    <hr>
 
-            <li>
-                <a data-fancybox="gallery" href="/product_images/{{../p.id}}/gallery/{{this}}">
-                    <img src="/product_images/{{../p.id}}/gallery/thumbs/{{this}}" alt="">
-                </a>
-            </li>
-            {{/ifCond}} {{/each}}
-        </ul>
-    </div>
+    
 </div>
 </div>
