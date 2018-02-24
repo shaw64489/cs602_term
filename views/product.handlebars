@@ -27,7 +27,7 @@
         
         <h3>{{this.title}}</h3>
         <br>
-        <img class="spi" src="/product_images/{{p.id}}/{{p.image}}" alt="">
+        <img class="product-img" src="/product_images/{{product.id}}/{{product.image}}" alt="">
         <br>
     </div>
     <div class="col-xs-12 col-md-3">
@@ -37,8 +37,8 @@
             {{#each galleryImages}} {{#ifCond this '!=' "thumbs"}}
 
             <li>
-                <a data-fancybox="gallery" href="/product_images/{{../p.id}}/gallery/{{this}}">
-                    <img src="/product_images/{{../p.id}}/gallery/thumbs/{{this}}" alt="">
+                <a data-fancybox="gallery" href="/product_images/{{../product.id}}/gallery/{{this}}">
+                    <img src="/product_images/{{../product.id}}/gallery/thumbs/{{this}}" alt="">
                 </a>
             </li>
             {{/ifCond}} {{/each}}
@@ -53,7 +53,7 @@
 <div class="row">
     <div class="col-xs-12 col-md-4"></div>
     <div class="col-xs-12 col-md-5">
-        <table class="table alignmiddle">
+        <table class="table middlealign">
 
             <thead>
                 <tr class="home">
@@ -62,13 +62,13 @@
                 </tr>
             </thead>
             <tr class="home">
-                <td>{{p.desc}}</td>
-                <td>${{toFixed p.price}}</td>
+                <td>{{product.desc}}</td>
+                <td>${{toFixed product.price}}</td>
             </tr>
         </table>
         <p>
             {{#if currentUser}}
-            <a class="btn btn-info add" href="/cart/add/{{p.slug}}">Add to cart</a>
+            <a class="btn btn-info add" href="/cart/add/{{product.slug}}">Add to cart</a>
             {{/if}}
         </p>
     </div>

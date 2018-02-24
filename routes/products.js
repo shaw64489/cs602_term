@@ -1,21 +1,24 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs-extra');
+const express = require('express');
+const router = express.Router();
+const fs = require('fs-extra');
 
+/******************************
+********  Retrieve Models  ****
+******************************/
 
 // Get Product model
-var Product = require('../models/product');
+const Product = require('../models/product');
 
 // Get Category model
-var Category = require('../models/category');
+const Category = require('../models/category');
 
 /*
  * GET all products
  */
-router.get('/', function (req, res) {
-//router.get('/', isUser, function (req, res) {
+router.get('/', (req, res) => {
 
-    Product.find(function (err, products) {
+    //find all products and render all products on page
+    Product.find( (err, products) => {
         if (err)
             console.log(err);
 
@@ -31,47 +34,58 @@ router.get('/', function (req, res) {
 /*
  * GET products by category
  */
-router.get('/:category', function (req, res) {
+router.get('/:category', (req, res) => {
 
-    var categorySlug = req.params.category;
+    //retrieve and store category slug
+    let categorySlug = req.params.category;
 
-    Category.findOne({slug: categorySlug}, function (err, c) {
-        Product.find({category: categorySlug}, function (err, products) {
+    //find the category that matches by slug
+    Category.findOne({slug: categorySlug}, (err, category) => {
+
+        //find all products in that matching category
+        Product.find({category: categorySlug}, (err, products) => {
+
             if (err)
                 console.log(err);
 
             res.render('cat_products', {
-                title: c.title,
+                title: category.title,
                 products: products
             });
         });
     });
-
 });
+
 
 /*
  * GET product details
  */
-router.get('/:category/:product', function (req, res) {
+router.get('/:category/:product', (req, res) => {
 
-    var galleryImages = null;
+    //set gallery images variable
+    let galleryImages = null;
 
-    //find product that matches
-    Product.findOne({slug: req.params.product}, function (err, product) {
+    //retrieve product from req parameter
+    let product = req.params.product;
+
+    //find product that matches by slug
+    Product.findOne({slug: product}, (err, product) => {
+
         if (err) {
             console.log(err);
-        } else {
 
-            console.log(product._id);
+        } else {
 
             //get the gallery directory
             var galleryDir = 'public/product_images/' + product._id + '/gallery';
 
             //read the gallery directory
             //callback files
-            fs.readdir(galleryDir, function (err, files) {
+            fs.readdir(galleryDir, (err, files) => {
+
                 if (err) {
                     console.log(err);
+
                 } else {
 
                     //if it can be read store files
@@ -80,17 +94,16 @@ router.get('/:category/:product', function (req, res) {
                     //title, product itself, gallery images
                     res.render('product', {
                         title: product.title,
-                        p: product,
+                        product: product,
                         galleryImages: galleryImages
                     });
                 }
             });
         }
     });
-
 });
 
-// Exports
+// Export module
 module.exports = router;
 
 

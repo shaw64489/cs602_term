@@ -1,9 +1,9 @@
-
-
 <div class="row products">
 
-    <div class="col-xs-12 col-md-3">
+    <div class="col-xs-12 col-md-3 cat-options">
         <h3>Categories</h3>
+        
+    
         <ul class="list-group">
             <li class="list-group-item">
                 <a href="/products">All products</a>
@@ -18,28 +18,27 @@
             </li>
             {{/each}}
         </ul>
+
     </div>
-    
+
     <!-- loop through all products - p -->
     <!-- for each product create a div and present product info and image -->
     {{#each products}}
-   
-        <div class="col-xs-12 col-md-4 p">
-            <a class="pa" href="/products/{{this.category}}/{{this.slug}}">
-                <img class="pimage" src="/product_images/{{this.id}}/{{this.image}}" alt="">
-            </a>
-            <h3>{{this.title}}</h3>
-            <h4>${{toFixed this.price}}</h4>
-            <a class="vd btn btn-secondary" href="/products/{{this.category}}/{{this.slug}}">View Details</a>
-        </div>
-    {{/each}}
-    {{#unless products}}
-    <div class="col-xs-12 col-md-2 test p"></div>
-        <div class="col-xs-12 col-md-4 p">
-            <h3>No Products Available</h3>
-            <img src="/images/no-products-found.png" height="300" width="300">
-        </div>
-    {{/unless}}
-        
-</div>
 
+    <div class="col-xs-12 col-md-4 p">
+        <a class="pa" href="/products/{{this.category}}/{{this.slug}}">
+            <img class="pimage" src="/product_images/{{this.id}}/{{this.image}}" alt="">
+        </a>
+        <h3>{{this.title}}</h3>
+        <h4>${{toFixed this.price}}</h4>
+        <a class="vd btn btn-secondary" href="/products/{{this.category}}/{{this.slug}}">View Details</a>
+    </div>
+    {{/each}} {{#unless products}}
+    <div class="col-xs-12 col-md-2 test p"></div>
+    <div class="col-xs-12 col-md-4 p">
+        <h3>No Products Available</h3>
+        <img src="/images/no-products-found.png" height="300" width="300">
+    </div>
+    {{/unless}}
+
+</div>

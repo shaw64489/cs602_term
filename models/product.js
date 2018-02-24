@@ -1,5 +1,8 @@
 var mongoose = require('mongoose');
 
+//use require keyword to refer and use underscore module
+var _ = require('underscore');
+
 // Product schema
 var ProductSchema = mongoose.Schema ({
 
@@ -33,3 +36,4 @@ var ProductSchema = mongoose.Schema ({
 });
 
 var Product = module.exports = mongoose.model('Product', ProductSchema);
+

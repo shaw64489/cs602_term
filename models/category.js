@@ -14,3 +14,4 @@ var CategorySchema = mongoose.Schema ({
 });
 
 var Category = module.exports = mongoose.model('category', CategorySchema);
+

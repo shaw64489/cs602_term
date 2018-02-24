@@ -1,21 +1,21 @@
-var express = require('express');
+const express = require('express');
 
-var router = express.Router();
+const router = express.Router();
 
 /******************************
 ********  Retrieve Models  ****
 ******************************/
 
 //get Product model
-var Product = require('../models/product');
+const Product = require('../models/product');
 //get Product model
-var PurchaseHistory = require('../models/purchase_history');
+const PurchaseHistory = require('../models/purchase_history');
 //retrieve Product model
 const User = require('../models/user');
 
 /*
 * Reference for cart sessions
-* author: Vojislav Kovacevic
+* author: Daniel Deutsch
 * 2017
 */
 
@@ -23,13 +23,13 @@ const User = require('../models/user');
 //add some product
 router.get('/add/:product', (req, res) => {
 
-    var user = req.session.userId;
-    var total;
+    let user = req.session.userId;
+    let total;
     //store slug as product from param
-    var slug = req.params.product;
+    let slug = req.params.product;
 
     //where slug matches
-    Product.findOne({ slug: slug }, function (err, p) {
+    Product.findOne({ slug: slug }, (err, p) => {
 
         if (err) console.log(err);
 
@@ -42,26 +42,26 @@ router.get('/add/:product', (req, res) => {
             //add object to cart
             req.session.cart.push({
                 title: slug,
-                qty: 1,
                 price: parseFloat(p.price).toFixed(2),
                 //grab path for product image
                 image: '/product_images/' + p._id + '/' + p.image,
+                qty: 1,
                 user: user
             });
             //else if cart exists
         } else {
 
             //either add new product or increment existing product
-            var cart = req.session.cart;
-            var newItem = true;
+            let userCart = req.session.cart;
+            let newItem = true;
 
             //loop through cart array
-            for (var i = 0; i < cart.length; i++) {
+            for (var i = 0; i < userCart.length; i++) {
 
                 //check if a title inside cart is equal
-                if (cart[i].title == slug) {
+                if (userCart[i].title == slug) {
                     //increment existing product quantity
-                    cart[i].qty++;
+                    userCart[i].qty++;
                     newItem = false;
                     //break if match is found
                     break;
@@ -71,7 +71,7 @@ router.get('/add/:product', (req, res) => {
             //check if new item is still true, if so add new item
             if (newItem) {
 
-                cart.push({
+                userCart.push({
                     title: slug,
                     qty: 1,
                     price: parseFloat(p.price).toFixed(2),
@@ -110,40 +110,47 @@ router.get('/checkout', (req, res) => {
 /*
 * GET update product
 */
-router.get('/update/:product', function (req, res) {
+router.get('/update/:product', (req, res) => {
 
 
-    var slug = req.params.product;
-    var cart = req.session.cart;
-    var action = req.query.action;
+    //store product, cart, action(add,delete,clear) from param/session/query
+    let slug = req.params.product;
+    let userCart = req.session.cart;
+    let action = req.query.action;
 
-    for (var i = 0; i < cart.length; i++) {
-        if (cart[i].title == slug) {
-            switch (action) {
-                case "add":
-                    cart[i].qty++;
-                    break;
-                case "remove":
-                    cart[i].qty--;
-                    if (cart[i].qty < 1)
-                        cart.splice(i, 1);
-                    break;
-                case "clear":
-                    cart.splice(i, 1);
-                    if (cart.length == 0)
-                        delete req.session.cart;
-                    break;
-                default:
-                    console.log('update problem');
-                    break;
+    //loop through cart
+    for (var i = 0; i < userCart.length; i++) {
+
+        //if title matches
+        if (userCart[i].title == slug) {
+
+            //add and update product quantity in cart
+            if(action == "add") {
+                userCart[i].qty++;
+
+            //subtract and update product quantity in cart
+            //if product qty is now 0, remove from cart
+            } else if (action == "remove") {
+
+                userCart[i].qty--;
+                    if (userCart[i].qty < 1)
+                    userCart.splice(i, 1);
+
+            //clear and delete cart
+            } else if (action == "clear") {
+
+                userCart.splice(i, 1);
+                if (userCart.length == 0)
+                    delete req.session.cart;
             }
-            break;
+            
         }
     }
 
+    //flash message that cart updated
     req.session.sessionFlash = {
         type: 'success',
-        message: 'Cart updated!'
+        message: 'Cart has been updated!'
     }
 
     res.redirect('/cart/checkout');
@@ -152,13 +159,15 @@ router.get('/update/:product', function (req, res) {
 /*
  * GET clear cart
  */
-router.get('/clear', function (req, res) {
+router.get('/clear', (req, res) => {
 
+    //delete cart session
     delete req.session.cart;
 
+    //flash messgae that cart session is deleted
     req.session.sessionFlash = {
         type: 'success',
-        message: 'Cart cleared!'
+        message: 'Cart has been cleared!'
     }
 
     res.redirect('/cart/checkout');
@@ -168,74 +177,81 @@ router.get('/clear', function (req, res) {
 /*
  * GET buy now
  */
-router.get('/buy/:user', function (req, res) {
+router.get('/buy/:user', (req, res) => {
 
-    var user = req.params.user;
+    //retrieve user ID from request parameter
+    let user = req.params.user;
 
-    for (var i = 0; i < req.session.cart.length; i++) {
+    //loop through session cart
+    for (let i = 0; i < req.session.cart.length; i++) {
 
-        var slug = req.session.cart[i].title;
-        console.log(slug);
-        var quantity = req.session.cart[i].qty;
-        console.log(quantity);
-        console.log(user);
-        Product.findOne({ slug: slug }, function (err, p) {
+        //store cart item title
+        let slug = req.session.cart[i].title;
+
+        //store cart item quantity
+        let quantity = req.session.cart[i].qty;
+
+        //find a matching product title and subtract based on cart quantity
+        Product.findOne({ slug: slug }, (err, product) => {
+
             if (err)
                 console.log(err);
 
-            console.log(p);
+            //subtract quantity
+            product.quantity -= quantity;
 
-            p.quantity -= quantity;
-            console.log(p);
-            p.save(function (err) {
+            //save update
+            product.save(function (err) {
                 if (err)
                     return console.log(err);
             });
 
+            let name = "";
 
-
-
-            var name = "";
-
-            User.findOne({ _id: user }, function (err, user) {
+            //find purchase user by id
+            User.findOne({ _id: user }, (err, user) => {
                 if (err)
                     console.log(err);
 
+                //gather user name
                 name = user.name;
 
-                console.log(p);
-                var d = new Date().toDateString()
-                console.log(d);
+                //gather date of purchase, convert to string
+                var date = new Date().toDateString()
 
+                //create purchase history based on this purchase - line by line
                 var purchase_history = new PurchaseHistory({
                     id: user._id,
                     buyer: name,
-                    title: p.slug,
+                    title: product.slug,
                     quantity: quantity,
-                    date: d
+                    date: date
                 });
 
-                purchase_history.save(function (err) {
+                //save purchase history item
+                purchase_history.save( (err) => {
                     if (err)
                         return console.log(err);
-
 
                 });
             });
         });
 
     }
+
+    //flash message of successful order submission
     req.session.sessionFlash = {
         type: 'success',
-        message: 'Order Submitted!'
+        message: 'Order has been submitted!'
     }
 
+    //delete current cart session
     delete req.session.cart;
 
+    //redirect to user profile
     res.redirect('../../profile');
 
 });
-
 
 //exports
 module.exports = router;

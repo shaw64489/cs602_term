@@ -1,11 +1,11 @@
 /*
 * Reference for flash implementation
-* author: Vojislav Kovacevic
+* author: Brian MacArthur
 * 2017
 */
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 /******************************
 ********  Retrieve Models  ****
@@ -21,18 +21,19 @@ const Product = require('../models/product');
 /*
  * GET category index
  */
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
 
     //find all categories
-    Category.find(function (err, categories) {
-        if (err)
-            return console.log(err);
-        //render admin categories view
-        //pass all categories
-        res.render('admin/categories', {
-            categories: categories
-        });
+ Category.find( (err, categories) => {
+    if (err)
+        return console.log(err);
+    //render admin categories view
+    //pass all categories
+    res.render('admin/categories', {
+        categories: categories
     });
+});
+
 });
 
 /*
@@ -57,11 +58,11 @@ router.post('/add-category', (req, res) => {
 
     //store request body title
     //create slug based on user title - remove spaces convert to lower case
-    var title = req.body.title;
-    var slug = title.replace(/\s+/g, '-').toLowerCase();
+    let title = req.body.title;
+    let slug = title.replace(/\s+/g, '-').toLowerCase();
 
     //define errors based on validation errors
-    var errors = req.validationErrors();
+    let errors = req.validationErrors();
 
     //if erros render add category page with errors
     if (errors) {
@@ -90,7 +91,7 @@ router.post('/add-category', (req, res) => {
 
                 //if no issue create new category
                 //set title and slug based on user input
-                var category = new Category({
+                let category = new Category({
                     title: title,
                     slug: slug
                 });
@@ -121,24 +122,21 @@ router.post('/add-category', (req, res) => {
                     res.redirect('/admin/categories');
                 });
             }
-
         });
-
     }
-
 });
 
 
 /*
  * GET edit category
  */
-router.get('/edit-category/:id', function (req, res) {
+router.get('/edit-category/:id', (req, res) => {
 
     //store category id from request param
-    var id = req.params.id;
+    let editId = req.params.id;
 
     //find the right category based on the passed ID
-    Category.findById(id, function (err, category) {
+    Category.findById(editId, (err, category) => {
         if (err)
             return console.log(err);
 
@@ -155,7 +153,7 @@ router.get('/edit-category/:id', function (req, res) {
 /*
  * POST edit category
  */
-router.post('/edit-category/:id', function (req, res) {
+router.post('/edit-category/:id', (req, res) => {
 
     //check request body title to make sure it has a value
     //use validator to display error below if empty
@@ -163,26 +161,26 @@ router.post('/edit-category/:id', function (req, res) {
 
     //store request body title
     //create slug based on user title - remove spaces convert to lower case
-    var title = req.body.title;
-    var slug = title.replace(/\s+/g, '-').toLowerCase();
+    let editTitle = req.body.title;
+    let editSlug = editTitle.replace(/\s+/g, '-').toLowerCase();
     //store category ID
-    var id = req.params.id;
+    let id = req.params.id;
 
     //define errors based on validation errors
-    var errors = req.validationErrors();
+    let errors = req.validationErrors();
 
     if (errors) {
 
         res.render('admin/edit_category', {
             errors: errors,
-            title: title,
+            title: editTitle,
             id: id
         });
     } else {
 
         //check that title is unique
         //$ne selects the documents where the value of the field is not equal
-        Category.findOne({ slug: slug, _id: { '$ne': id } }, function (err, category) {
+        Category.findOne({ slug: editSlug, _id: { '$ne': id } }, (err, category) => {
             if (category) {
 
                 //flash message on if category title exists
@@ -197,25 +195,25 @@ router.post('/edit-category/:id', function (req, res) {
             } else {
 
                 //if everything is ok - find the category by ID
-                Category.findById(id, function (err, category) {
+                Category.findById(id, (err, category) => {
                     if (err)
                         return console.log(err);
                     
                     //store original category slug 
                     //will be used to update product category properties
-                    var original = category.slug;
+                    let original = category.slug;
                     //update category title to new title
-                    category.title = title;
+                    category.title = editTitle;
                     //update category slug to new slug
-                    category.slug = slug;
+                    category.slug = editSlug;
 
                     //save category
-                    category.save(function (err) {
+                    category.save( (err) => {
                         if (err)
                             return console.log(err);
 
                         //add category to global locals
-                        Category.find(function (err, categories) {
+                        Category.find( (err, categories) => {
 
                             if (err) {
                                 console.log(err);
@@ -228,7 +226,7 @@ router.post('/edit-category/:id', function (req, res) {
 
                         //Update Products with Same Category based on edit 
                         //search using the original category slug
-                        Product.find({ category: original }, function (err, p) {
+                        Product.find({ category: original }, (err, p) => {
 
                             if (err)
                                 console.log(err);
@@ -237,10 +235,10 @@ router.post('/edit-category/:id', function (req, res) {
                             //update category to new category edit
                             for (let i = 0; i < p.length; i++) {
 
-                                p[i].category = slug;
+                                p[i].category = editSlug;
 
                                 //save update to product
-                                p[i].save(function (err) {
+                                p[i].save( (err) => {
                                     if (err)
                                         return console.log(err);
                                 });
@@ -265,15 +263,15 @@ router.post('/edit-category/:id', function (req, res) {
 /*
  * GET delete category
  */
-router.get('/delete-category/:id', function (req, res) {
+router.get('/delete-category/:id', (req, res) => {
 
     //find category by the passed id request paramterand remove category
-    Category.findByIdAndRemove(req.params.id, function (err) {
+    Category.findByIdAndRemove(req.params.id, (err) => {
         if (err)
             return console.log(err);
 
         //update category global locals
-        Category.find(function (err, categories) {
+        Category.find( (err, categories) => {
 
             if (err) {
                 console.log(err);

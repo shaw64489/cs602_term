@@ -1,6 +1,8 @@
 /*
     * Reference for bcrypt login encryption and hash
-    * author: Andrew Chalkley
+    * author: Cory LaViska
+    * Statics authenticate
+    * author: Daniel Deutsch
     * 2017
 */
 
@@ -26,10 +28,15 @@ var UserSchema = new mongoose.Schema({
     type: String,
     //mongodb enforces email field
     required: true,
-    //remove white space before or after text
-    trim: true,
     //does not already exist
     unique: true,
+    //remove white space before or after text
+    trim: true
+    
+  },
+  admin: {
+    type: Number,
+    required: true
   },
   name: {
     type: String,
@@ -38,10 +45,6 @@ var UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
-  },
-  admin: {
-    type: Number,
     required: true
   }
 });

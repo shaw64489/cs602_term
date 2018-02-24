@@ -1,9 +1,13 @@
-var express = require('express');
+const express = require('express');
 
-var router = express.Router();
+const router = express.Router();
+
+/******************************
+********  Retrieve Models  ****
+******************************/
 
 //get Product model
-var PurchaseHistory = require('../models/purchase_history');
+const PurchaseHistory = require('../models/purchase_history');
 
 //retrieve Product model
 const Product = require('../models/product');
@@ -16,17 +20,18 @@ const User = require('../models/user');
 /*
  * GET purchase history for current user
  */
-router.get('/:id', function (req, res) {
+router.get('/:id', (req, res) => {
 
+    //retrieve and store user ID from request parameter
     var id = req.params.id;
 
+    //search through purchase history to find the users full history based on ID
+    PurchaseHistory.find({id: id}, (err, history) => {
 
-    PurchaseHistory.find({id: id},function (err, history) {
         if (err)
             return console.log(err);
 
-
-    
+        //render user history
         res.render('history', {
             purchase: history
         });
@@ -35,5 +40,5 @@ router.get('/:id', function (req, res) {
 });
 
 
-//exports
+//export module
 module.exports = router;

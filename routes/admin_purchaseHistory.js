@@ -1,13 +1,13 @@
-var express = require('express');
+const express = require('express');
 
-var router = express.Router();
+const router = express.Router();
 
 /******************************
-********  Retrieve Models  ****
+******** Retrieve Models  ****
 ******************************/
 
 //get Product model
-var PurchaseHistory = require('../models/purchase_history');
+const PurchaseHistory = require('../models/purchase_history');
 //retrieve Product model
 const Product = require('../models/product');
 //retrieve Product model
@@ -17,11 +17,11 @@ const User = require('../models/user');
 /*
  * GET purchase history index
  */
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
 
 
     //find and render entire purchase history for all customers
-    PurchaseHistory.find(function (err, history) {
+    PurchaseHistory.find( (err, history) => {
         if (err)
             return console.log(err);
 
@@ -35,13 +35,13 @@ router.get('/', function (req, res) {
 /*
  * GET purchase history for customer
  */
-router.get('/:id', function (req, res) {
+router.get('/:id', (req, res) => {
 
     //retrive and store customer ID from request parameter
-    var id = req.params.id;
+    let id = req.params.id;
 
     //search purchase history by customer ID
-    PurchaseHistory.find({id: id},function (err, history) {
+    PurchaseHistory.find({id: id}, (err, history) => {
         if (err)
             return console.log(err);
 

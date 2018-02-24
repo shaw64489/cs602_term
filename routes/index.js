@@ -1,11 +1,13 @@
 /*
     * Reference for bcrypt login encryption
-    * author: Andrew Chalkley
+    * author: Daniel Deutsch
+    * author: Cory LaViska
     * 2017
 */
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+
+const router = express.Router();
 //use require keyword to refer and use bcrypt module
 //const bcrypt = require('bcrypt');
 //use require keyword to refer and use bcrypt module
@@ -15,44 +17,51 @@ const bcrypt = require('bcryptjs');
 //import and use middleware module
 const mid = require('../middleware');
 
+/******************************
+********  Retrieve Models  ****
+******************************/
+
 //retrieve User model
-var User = require('../models/user')
+const User = require('../models/user')
 
 //get Product model
-var Product = require('../models/product');
+const Product = require('../models/product');
 
-// GET /profile
+// GET profile
 //add middleware for users not logged in
-router.get('/profile', mid.requiresLogin, function (req, res, next) {
+router.get('/profile', mid.requiresLogin, (req, res, next) => {
 
   //retrieve userID from session store
+  let id = req.session.userId;
   //exec query against mongo db - retrieving user info from mongo
-  User.findById(req.session.userId)
-    .exec(function (error, user) {
+  User.findById(id)
+    .exec( (error, user) => {
       if (error) {
         return next(error);
         //if no error - render profile template  
       } else {
+
         return res.render('profile', { title: 'Profile', name: user.name, id: user.id});
       }
-    })
-
+    });
 });
 
-// GET /admin
+// GET admin
 //add middleware for users not admin
-router.get('/admin', mid.requiresLogin, function (req, res, next) {
+router.get('/admin', mid.requiresLogin, (req, res, next) => {
 
   //retrieve userID from session store
   //exec query against mongo db - retrieving user info from mongo
   User.findById(req.session.userId)
-    .exec(function (error, user) {
+    .exec( (error, user) => {
 
+      //if error or user not admin alert user
       if (error || user.admin != 1) {
-        var err = new Error('You must be Admin to view this page.');
+        let err = new Error('You must be Admin to view this page.');
         err.status = 401;
         return next(err);
-        //if no error - render admin template  
+
+        //if no error and user is admin - render admin template  
       } else {
         return res.render('admin', { title: 'Admin', name: user.name});
       }
@@ -61,35 +70,39 @@ router.get('/admin', mid.requiresLogin, function (req, res, next) {
 
 });
 
-// GET /logout
-router.get('/logout', function (req, res, next) {
+// GET logout
+//on logout destroy current session
+router.get('/logout', (req, res, next) => {
+
   //check to see if session exists
   //if it does, delete it
   if (req.session) {
+
     //delete session object
-    req.session.destroy(function (err) {
+    req.session.destroy( (err) => {
       if (err) {
         return next(err);
+
       } else {
+
+        //redirect home
         return res.redirect('/');
       }
     });
   };
 });
 
-// GET /login
+// GET login
 //add middleware for users logged in already
-router.get('/login', mid.loggedOut, function (req, res, next) {
+router.get('/login', mid.loggedOut, (req, res, next) => {
   return res.render('login', { title: '' });
 });
 
 
 
 
-
-
-// POST /login
-router.post('/login', function (req, res, next) {
+// POST login
+router.post('/login', (req, res, next) => {
   if (req.body.email && req.body.password) {
     //authenticate login on imported User model
     //pass email and password from form and callback
@@ -98,20 +111,23 @@ router.post('/login', function (req, res, next) {
     //query to find user with matching email address
     User.findOne({ email: req.body.email })
       //use exec to perform search and provide callback to process
-      .exec(function (error, user) {
+      .exec( (error, user) => {
+
         if (error) {
-          var error = new Error('Wrong email or password');
+          let error = new Error('Wrong email or password');
           error.status = 401;
           return next(error);
+
           //return error if email address wasnt in any document
         } else if (!user) {
-          var error = new Error('No user');
+          let error = new Error('No user');
           error.status = 401;
           return next(error);
         }
+
         //use bcrypt compar to compared supplied password with hash version
         //return error or result if match
-        bcrypt.compare(req.body.password, user.password, function (error, result) {
+        bcrypt.compare(req.body.password, user.password, (error, result) => {
           //if pw matches return null and user document
           if (result === true) {
 
@@ -127,7 +143,7 @@ router.post('/login', function (req, res, next) {
 
           } else {
 
-            var err = new Error('Email and Password are required');
+            let err = new Error('Email and Password are required');
             //missing or bad authentication
             err.status = 401;
             return next(err);
@@ -136,7 +152,8 @@ router.post('/login', function (req, res, next) {
       });
 
   } else {
-    var err = new Error('Email and Password are required');
+
+    let err = new Error('Email and Password are required or incorrect');
     //missing or bad authentication
     err.status = 401;
     return next(err);
@@ -144,15 +161,17 @@ router.post('/login', function (req, res, next) {
 
 });
 
-// GET /register
+// GET register
 //add middleware for users logged in already
 //although this will be skipped because handlebars view checks
-router.get('/register', mid.loggedOut, function (req, res, next) {
+router.get('/register', mid.loggedOut, (req, res, next) => {
   return res.render('register');
 });
 
-// POST /register
-router.post('/register', function (req, res, next) {
+// POST register
+router.post('/register', (req, res, next) => {
+
+  //if all fields have been entered in form
   if (req.body.email &&
     req.body.name &&
     req.body.password &&
@@ -160,7 +179,7 @@ router.post('/register', function (req, res, next) {
 
     //confirm that user typed same password twice
     if (req.body.password !== req.body.confirmPassword) {
-      var err = new Error('Passwords need to match');
+      let err = new Error('Passwords need to match');
       //bad request - missing info
       err.status = 400;
       //return error to error handling middleware
@@ -168,17 +187,21 @@ router.post('/register', function (req, res, next) {
     }
 
     //create object with form input
-    var userData = {
+    //set as admin by default
+    //to change to normal user - set to 0
+    let userData = {
       email: req.body.email,
       name: req.body.name,
       password: req.body.password,
-      admin: 0
+      admin: 1
     };
 
     // insert into  using schema create method
     User.create(userData, (error, user) => {
+
       if (error) {
         return next(error);
+
       } else {
         //create session - save user id into session
         //stored on server - cookie is sent containing session id
@@ -200,44 +223,47 @@ router.post('/register', function (req, res, next) {
   }
 });
 
-// GET /
-router.get('/', function (req, res, next) {
+// GET home
+router.get('/', (req, res, next) => {
   return res.render('home', { title: '' });
 });
 
-// GET /about
-router.get('/about', function (req, res, next) {
+// GET about
+router.get('/about', (req, res, next) => {
   return res.render('about', { title: 'About' });
 });
 
-// GET /contact
-router.get('/contact', function (req, res, next) {
-  return res.render('contact', { title: 'Contact' });
-});
-
-// GET /categories
-router.get('/categories', function (req, res, next) {
+// GET categories
+router.get('/categories', (req, res, next) => {
   return res.render('categories', { title: 'Categories' });
 });
 
-// POST /search
-router.post('/categories/search/', function (req, res, next) {
+// POST search
+router.post('/categories/search/', (req, res, next) => {
 
-  var product = req.body.product;
-  product = product.toLowerCase();
+  //retrieve product title from request body and convert to lower case
+  let product = req.body.product;
+  product = product.replace(/\s+/g, '-').toLowerCase();
 
 
-  Product.findOne({slug: {'$regex' : product, '$options' : 'i'} }, function (err, p) {
+  //find the product that match - reg expression used to find partial match
+  Product.findOne({slug: {'$regex' : product, '$options' : 'i'} }, (err, product) => {
+
     if (err)
       console.log(err);
-    if (p) {
+    
+    //if a match store product category and slug
+    if (product) {
 
-      var cat = p.category;
-      var slug = p.slug;
+      let cat = product.category;
+      let slug = product.slug;
 
+      //redirect to that product details page
       res.redirect('/products/' + cat + '/' + slug);
+
     } else {
 
+      //if no match - alert with flash message
       req.session.sessionFlash = {
         type: 'error',
         message: 'Product not in inventory!'
@@ -248,4 +274,5 @@ router.post('/categories/search/', function (req, res, next) {
   });
 });
 
-  module.exports = router;
+//export module
+module.exports = router;

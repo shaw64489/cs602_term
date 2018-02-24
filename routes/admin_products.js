@@ -1,35 +1,36 @@
-var express = require('express');
-var router = express.Router();
-var mkdirp = require('mkdirp');
-var fs = require('fs-extra');
-var resizeImg = require('resize-img');
+const express = require('express');
+const router = express.Router();
+const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
+const resizeImg = require('resize-img');
 
 /******************************
 ********  Retrieve Models  ****
 ******************************/
 
 // Get Product model
-var Product = require('../models/product');
+const Product = require('../models/product');
 
 // Get Category model
-var Category = require('../models/category');
+const Category = require('../models/category');
 
 /*
  * GET products index
- */
-router.get('/', function (req, res) {
+*/
+
+router.get('/', (req, res) => {
 
     //used in view helper conditional statement
-    var count = 0;
+    let count = 0;
 
     //find product count
-    Product.count(function (err, c) {
-        count = c;
+    Product.count( (err, counting) => {
+        count = counting;
     });
 
 
     //find all products and pass to view to render all products
-    Product.find(function (err, products) {
+    Product.find( (err, products) => {
         res.render('admin/products', {
             products: products,
             count: count
@@ -41,17 +42,18 @@ router.get('/', function (req, res) {
 /*
  * GET add product
  */
-router.get('/add-product', function (req, res) {
+router.get('/add-product', (req, res) => {
 
 
-    var title = "";
-    var desc = "";
-    var price = "";
-    var quantity = "";
+    let title = "";
+    let desc = "";
+    let price = "";
+    let quantity = "";
 
     //if errors render add product page
     //pass all categories for form dropdown list
-    Category.find(function (err, categories) {
+    Category.find( (err, categories) => {
+
         res.render('admin/add_product', {
 
             title: title,
@@ -62,9 +64,8 @@ router.get('/add-product', function (req, res) {
 
         });
     });
-
-
 });
+
 /*
 * Reference for image path
 * author: Vojislav Kovacevic
@@ -74,11 +75,11 @@ router.get('/add-product', function (req, res) {
 /*
  * POST add product
  */
-router.post('/add-product', function (req, res) {
+router.post('/add-product', (req, res) => {
 
     //type of file input named image - if not equal to undefined
     //it will either be provided image name or empty string
-    var imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
+    let imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
 
     //check request body values to make sure they have a value
     //use validator to display error below if empty
@@ -89,22 +90,24 @@ router.post('/add-product', function (req, res) {
 
 
     //store request body information based on user input
-    var title = req.body.title;
-    var slug = title.replace(/\s+/g, '-').toLowerCase();
-    var desc = req.body.desc;
-    var price = req.body.price;
-    var category = req.body.category;
-    var quantity = req.body.quantity;
+    let title = req.body.title;
+    let slug = title.replace(/\s+/g, '-').toLowerCase();
+    
+    let category = req.body.category;
+    let quantity = req.body.quantity;
+
+    let desc = req.body.desc;
+    let price = req.body.price;
 
     //define errors based on validation errors
-    var errors = req.validationErrors();
+    let errors = req.validationErrors();
 
 
     if (errors) {
 
         //if errors render add product page
         //pass all categories for form dropdown list
-        Category.find(function (err, categories) {
+        Category.find( (err, categories) => {
             res.render('admin/add_product', {
                 errors: errors,
                 title: title,
@@ -120,14 +123,14 @@ router.post('/add-product', function (req, res) {
         //determing if product already exists by user generated slug
         Product.findOne({
             slug: slug
-        }, function (err, product) {
+        }, (err, product) => {
             if (product) {
                 req.flash('danger', 'Product title exists, choose another.');
-                Category.find(function (err, categories) {
+                Category.find( (err, categories) => {
                     res.render('admin/add_product', {
                         title: title,
-                        desc: desc,
                         categories: categories,
+                        desc: desc,
                         price: price,
                         quantity: quantity
                     });
@@ -135,14 +138,14 @@ router.post('/add-product', function (req, res) {
             } else {
 
                 //update price to correct format
-                var price2 = parseFloat(price).toFixed(2);
+                let priceUpdate = parseFloat(price).toFixed(2);
 
                 //add product based on user input
-                var product = new Product({
+                let product = new Product({
                     title: title,
                     slug: slug,
                     desc: desc,
-                    price: price2,
+                    price: priceUpdate,
                     category: category,
                     image: imageFile,
                     quantity: quantity
@@ -150,21 +153,21 @@ router.post('/add-product', function (req, res) {
 
                 //save newly added product
                 //on save we have access to product ID
-                product.save(function (err) {
+                product.save( (err) => {
                     if (err)
                         return console.log(err);
 
                     //create image directories based on product ID
                     //gallery and thumbs
-                    mkdirp('public/product_images/' + product._id, function (err) {
+                    mkdirp('public/product_images/' + product._id, (err) => {
                         return console.log(err);
                     });
 
-                    mkdirp('public/product_images/' + product._id + '/gallery', function (err) {
+                    mkdirp('public/product_images/' + product._id + '/gallery', (err) => {
                         return console.log(err);
                     });
 
-                    mkdirp('public/product_images/' + product._id + '/gallery/thumbs', function (err) {
+                    mkdirp('public/product_images/' + product._id + '/gallery/thumbs', (err) => {
                         return console.log(err);
                     });
 
@@ -172,12 +175,12 @@ router.post('/add-product', function (req, res) {
                     if (imageFile != "") {
 
                         //store product image
-                        var productImage = req.files.image;
+                        let productImage = req.files.image;
                         //store product image path
-                        var path = 'public/product_images/' + product._id + '/' + imageFile;
+                        let path = 'public/product_images/' + product._id + '/' + imageFile;
 
                         //pass image path and create the necessary directory
-                        productImage.mv(path, function (err) {
+                        productImage.mv(path, (err) => {
                             return console.log(err);
                         });
                     }

@@ -14,6 +14,13 @@ var MongoStore = require('connect-mongo')(session);
 var path = require('path');
 var helpers = require('handlebars-helpers')();
 
+//get Product model
+var PurchaseHistory = require('./models/purchase_history');
+//retrieve Product model
+const Product = require('./models/product');
+//retrieve Product model
+const User = require('./models/user');
+
 
 //express application (app) is created using the express() function
 const app = express();
@@ -121,7 +128,7 @@ app.engine('handlebars',
             toFixed: function (number) {
                 return parseFloat(number).toFixed(2);
             },
-            var: function (name, value){
+            var: function (name, value) {
                 this[name] += value;
             }
 
@@ -175,7 +182,7 @@ app.use(function (req, res, next) {
 
 // Express Validator middleware
 app.use(expressValidator({
-    
+
     //custom validate that is an image added
     customValidators: {
         isImage: function (value, filename) {
@@ -204,6 +211,7 @@ var products = require('./routes/products.js');
 var cart = require('./routes/cart.js');
 var purchaseHistory = require('./routes/admin_purchaseHistory.js');
 var cusPurchaseHistory = require('./routes/purchaseHistory.js');
+//var api = require('./routes/rest.js');
 
 //use
 app.use('/', routes);
@@ -213,6 +221,55 @@ app.use('/products', products);
 app.use('/cart', cart);
 app.use('/admin/history', purchaseHistory);
 app.use('/history', cusPurchaseHistory);
+//app.use('/api', api);
+
+app.get('/api/products', (req, res) => {
+
+    let format = req.params.format;
+
+    var products = Product.find(function (err, products) {
+
+        res.format({
+
+            'application/json': () => {
+                console.log(products);
+                res.json(products);
+            },
+
+ 
+            'application/xml': () => {
+
+                var productList = '<?xml version="1.0"?>\n';
+                productList +=  '<products>\n';
+
+                for (var i = 0; i < products.length; i++) {
+                    productList += 
+                    ' <product id="' + products[i].id + '">\n' +
+                    '<title>' + products[i].title + '</title>\n'
+                    + '<slug>' + products[i].slug + '</slug>\n'
+                    + '<desc>' + products[i].desc + '</desc>\n' 
+                    + '<price>' + products[i].price + '</price>\n' 
+                    + '<category>' + products[i].category + '</category>\n'  
+                    + '<image>' + products[i].image + '</image>\n' 
+                    + '<quantity>' + products[i].quantity + '</quantity>\n' 
+                    + '</product>\n';
+                }
+                productList += '</products>';
+                res.type('application/xml');
+                res.send(productList);
+            },
+
+            'default': () => {
+                res.status(404);
+                res.send("<b>404 - Not Found</b>");
+            }
+
+
+        });
+        
+    });
+
+});
 
 
 
@@ -233,6 +290,15 @@ app.use(function (err, req, res, next) {
         error: {}
     });
 });
+
+
+
+/*
+
+curl -X GET -H "Accept:application/json" "http://localhost:3000/api/products"
+curl -X GET -H "Accept:application/xml" "http://localhost:3000/api/products"
+
+*/
 
 app.set('port', process.env.PORT || 3000);
 
