@@ -1,0 +1,32 @@
+<h2>{{title}}</h2>
+<div class="edit">
+    <h2 class="page-title">Edit history item</h2>
+    <a href="/admin/history" class="btn btn-primary">Back to all history</a>
+    <br>
+    <br>
+
+    <form method="post" action="/admin/history/edit-history/{{id}}" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="">Customer</label>
+            <input type="text" class="form-control" name="buyer" value="{{buyer}}" placeholder="Customer" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="">Product</label>
+            <input type="text" name="title" class="form-control"  value="{{title}}" placeholder="Title" readonly>
+        </div>
+
+        <div class="form-group">
+            <div class="form-group">
+                <label for="">Quantity</label>
+                <input type="text" class="form-control" name="quantity" value="{{quantity}}" placeholder="Quantity">
+            </div>
+        </div>
+        
+        <button class="btn btn-default">Submit</button>
+    </form>
+
+    
+</div>
+
