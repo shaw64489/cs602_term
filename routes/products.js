@@ -1,5 +1,12 @@
+/*******************************
+********  Retrieve Modules  ****
+********************************/
+
+//use require keyword to refer and use express module
 const express = require('express');
+//define router
 const router = express.Router();
+//use require keyword to refer and use file system module
 const fs = require('fs-extra');
 
 /******************************
@@ -62,30 +69,23 @@ router.get('/:category', (req, res) => {
  */
 router.get('/:category/:product', (req, res) => {
 
-    //set gallery images variable
     let galleryImages = null;
 
-    //retrieve product from req parameter
-    let product = req.params.product;
-
-    //find product that matches by slug
-    Product.findOne({slug: product}, (err, product) => {
-
+    //find product that matches
+    Product.findOne({slug: req.params.product}, (err, product) => {
         if (err) {
             console.log(err);
-
         } else {
 
+
             //get the gallery directory
-            var galleryDir = 'public/product_images/' + product._id + '/gallery';
+            let galleryDir = 'public/product_images/' + product._id + '/gallery';
 
             //read the gallery directory
             //callback files
             fs.readdir(galleryDir, (err, files) => {
-
                 if (err) {
                     console.log(err);
-
                 } else {
 
                     //if it can be read store files
@@ -94,13 +94,14 @@ router.get('/:category/:product', (req, res) => {
                     //title, product itself, gallery images
                     res.render('product', {
                         title: product.title,
-                        product: product,
+                        p: product,
                         galleryImages: galleryImages
                     });
                 }
             });
         }
     });
+
 });
 
 // Export module

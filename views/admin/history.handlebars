@@ -11,6 +11,8 @@
             <th>Product</th>
             <th>Quantity</th>
             <th>Purchase Date</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -21,6 +23,9 @@
 
             <td>{{this.quantity}}</td>
             <td>{{this.date}}</td>
+            <td><a class="cat btn btn-info" href="/admin/history/edit-history/{{this._id}}">Edit</a></td>
+
+            <td><a class="confirmDeletion cat btn btn-info" href="/admin/history/delete-history/{{this._id}}">Delete</a></td>
         </tr>
        {{/each}}
     </tbody>

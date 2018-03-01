@@ -1,5 +1,10 @@
-const express = require('express');
+/*******************************
+********  Retrieve Modules  ****
+********************************/
 
+//use require keyword to refer and use express module
+const express = require('express');
+//define router
 const router = express.Router();
 
 /******************************

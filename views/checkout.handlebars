@@ -80,14 +80,14 @@
     {{/if}}
 </div>
 <script>
+
+    //confirm deletion popup on clear cart
     $(function () {
 
         $('a.clearcart').on('click', function () {
             if (!confirm('Confirm clear cart'))
                 return false;
         });
-
-
 
     });
 

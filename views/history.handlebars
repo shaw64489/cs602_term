@@ -14,6 +14,7 @@
         </tr>
     </thead>
     <tbody>
+        <!-- loop through each purchase history item and display -->
         {{#each purchase}}
         <tr>
             <td><a href="/history/{{this.id}}" class="btn btn-primary">{{this.buyer}}</a></td>

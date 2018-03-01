@@ -5,11 +5,16 @@
     * 2017
 */
 
+/*******************************
+********  Retrieve Modules  ****
+********************************/
+
+//use require keyword to refer and use express module
 const express = require('express');
 
+//define router
 const router = express.Router();
-//use require keyword to refer and use bcrypt module
-//const bcrypt = require('bcrypt');
+
 //use require keyword to refer and use bcrypt module
 const bcrypt = require('bcryptjs');
 
@@ -235,7 +240,10 @@ router.get('/about', (req, res, next) => {
 
 // GET categories
 router.get('/categories', (req, res, next) => {
+
+
   return res.render('categories', { title: 'Categories' });
+
 });
 
 // POST search

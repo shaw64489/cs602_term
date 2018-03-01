@@ -1,6 +1,13 @@
-const express = require('express');
+/*******************************
+********  Retrieve Modules  ****
+********************************/
 
+//use require keyword to refer and use express module
+const express = require('express');
+//define router
 const router = express.Router();
+//use require keyword to refer and use file system module
+const fs = require('fs-extra');
 
 /******************************
 ********  Retrieve Models  ****
@@ -125,25 +132,25 @@ router.get('/update/:product', (req, res) => {
         if (userCart[i].title == slug) {
 
             //add and update product quantity in cart
-            if(action == "add") {
+            if (action == "add") {
                 userCart[i].qty++;
 
-            //subtract and update product quantity in cart
-            //if product qty is now 0, remove from cart
+                //subtract and update product quantity in cart
+                //if product qty is now 0, remove from cart
             } else if (action == "remove") {
 
                 userCart[i].qty--;
-                    if (userCart[i].qty < 1)
+                if (userCart[i].qty < 1)
                     userCart.splice(i, 1);
 
-            //clear and delete cart
+                //clear and delete cart
             } else if (action == "clear") {
 
                 userCart.splice(i, 1);
                 if (userCart.length == 0)
                     delete req.session.cart;
             }
-            
+
         }
     }
 
@@ -200,56 +207,138 @@ router.get('/buy/:user', (req, res) => {
             //subtract quantity
             product.quantity -= quantity;
 
-            //save update
-            product.save(function (err) {
-                if (err)
-                    return console.log(err);
-            });
+            //if user tries to buy quantity that exceeds amount left
+            if (product.quantity < 0) {
 
-            let name = "";
+                //flash message of error and do not submit order
+                req.session.sessionFlash = {
+                    type: 'error',
+                    message: 'Order exceeds inventory remaining!'
+                }
 
-            //find purchase user by id
-            User.findOne({ _id: user }, (err, user) => {
-                if (err)
-                    console.log(err);
+                //redirect to user profile
+                res.redirect('../../profile');
 
-                //gather user name
-                name = user.name;
+            //if user buys last remaining product
+            } else if (product.quantity == 0) {
 
-                //gather date of purchase, convert to string
-                var date = new Date().toDateString()
+                let name = "";
 
-                //create purchase history based on this purchase - line by line
-                var purchase_history = new PurchaseHistory({
-                    id: user._id,
-                    buyer: name,
-                    title: product.slug,
-                    quantity: quantity,
-                    date: date
+                //find purchase user by id
+                User.findOne({ _id: user }, (err, user) => {
+                    if (err)
+                        console.log(err);
+
+                    //gather user name
+                    name = user.name;
+
+                    //gather date of purchase, convert to string
+                    var date = new Date().toDateString()
+
+                    //create purchase history based on this purchase - line by line
+                    var purchase_history = new PurchaseHistory({
+                        id: user._id,
+                        buyer: name,
+                        title: product.slug,
+                        quantity: quantity,
+                        date: date
+                    });
+
+                    //save purchase history item
+                    purchase_history.save((err) => {
+                        if (err)
+                            return console.log(err);
+
+                    });
+
+                    var path = 'public/product_images/' + product._id;
+
+                    //remove product image directory and product
+                    fs.remove(path, function (err) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            //remove product from db
+                            Product.findByIdAndRemove(product._id, function (err) {
+                                console.log(err);
+                            });
+
+
+
+                            //flash message of successful order submission
+                            req.session.sessionFlash = {
+                                type: 'success',
+                                message: 'You bought the last one!'
+                            }
+
+                            //delete current cart session
+                            delete req.session.cart;
+
+                            //redirect to user profile
+                            res.redirect('../../profile');
+                        }
+
+                    });
+
                 });
 
-                //save purchase history item
-                purchase_history.save( (err) => {
+            //inventory left - proceed normally
+            } else {
+
+                //save update
+                product.save(function (err) {
                     if (err)
                         return console.log(err);
+                });
+
+                let name = "";
+
+                //find purchase user by id
+                User.findOne({ _id: user }, (err, user) => {
+                    if (err)
+                        console.log(err);
+
+                    //gather user name
+                    name = user.name;
+
+                    //gather date of purchase, convert to string
+                    var date = new Date().toDateString()
+
+                    //create purchase history based on this purchase - line by line
+                    var purchase_history = new PurchaseHistory({
+                        id: user._id,
+                        buyer: name,
+                        title: product.slug,
+                        quantity: quantity,
+                        date: date
+                    });
+
+                    //save purchase history item
+                    purchase_history.save((err) => {
+                        if (err)
+                            return console.log(err);
+
+                    });
+
+                    //flash message of successful order submission
+                    req.session.sessionFlash = {
+                        type: 'success',
+                        message: 'Order has been submitted!'
+                    }
+
+                    //delete current cart session
+                    delete req.session.cart;
+
+                    //redirect to user profile
+                    res.redirect('../../profile');
+
 
                 });
-            });
+
+            }
         });
 
     }
-
-    //flash message of successful order submission
-    req.session.sessionFlash = {
-        type: 'success',
-        message: 'Order has been submitted!'
-    }
-
-    //delete current cart session
-    delete req.session.cart;
-
-    //redirect to user profile
-    res.redirect('../../profile');
 
 });
 

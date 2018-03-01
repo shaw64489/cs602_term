@@ -22,10 +22,12 @@
         </tr>
     </thead>
     <tbody>
+ 
        {{#each products}}
+       
         <tr>
             <td>
-                {{#ifCond this.image '==' null }}
+                {{#ifCond this.image '==' "" }}
                 <img id="noimage" src="/images/noimage.png">
                 {{else}}
                 <img id="noimage" src="/product_images/{{this._id}}/{{this.image}}">

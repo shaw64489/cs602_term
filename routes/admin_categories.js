@@ -4,7 +4,13 @@
 * 2017
 */
 
+/*******************************
+********  Retrieve Modules  ****
+********************************/
+
+//use require keyword to refer and use express module
 const express = require('express');
+//define router
 const router = express.Router();
 
 /******************************
@@ -24,15 +30,15 @@ const Product = require('../models/product');
 router.get('/', (req, res) => {
 
     //find all categories
- Category.find( (err, categories) => {
-    if (err)
-        return console.log(err);
-    //render admin categories view
-    //pass all categories
-    res.render('admin/categories', {
-        categories: categories
+    Category.find((err, categories) => {
+        if (err)
+            return console.log(err);
+        //render admin categories view
+        //pass all categories
+        res.render('admin/categories', {
+            categories: categories
+        });
     });
-});
 
 });
 
@@ -84,7 +90,7 @@ router.post('/add-category', (req, res) => {
                     type: 'warning',
                     message: 'Category title exists, choose another.'
                 }
-                
+
                 //redirect to add category page
                 res.redirect('/admin/categories/add-category');
             } else {
@@ -190,15 +196,15 @@ router.post('/edit-category/:id', (req, res) => {
                     message: 'Category title already exists, please choose another.'
                 }
                 res.redirect('/admin/categories/edit-category/' + id);
-            
-            
+
+
             } else {
 
                 //if everything is ok - find the category by ID
                 Category.findById(id, (err, category) => {
                     if (err)
                         return console.log(err);
-                    
+
                     //store original category slug 
                     //will be used to update product category properties
                     let original = category.slug;
@@ -208,12 +214,12 @@ router.post('/edit-category/:id', (req, res) => {
                     category.slug = editSlug;
 
                     //save category
-                    category.save( (err) => {
+                    category.save((err) => {
                         if (err)
                             return console.log(err);
 
                         //add category to global locals
-                        Category.find( (err, categories) => {
+                        Category.find((err, categories) => {
 
                             if (err) {
                                 console.log(err);
@@ -238,7 +244,7 @@ router.post('/edit-category/:id', (req, res) => {
                                 p[i].category = editSlug;
 
                                 //save update to product
-                                p[i].save( (err) => {
+                                p[i].save((err) => {
                                     if (err)
                                         return console.log(err);
                                 });
@@ -251,7 +257,7 @@ router.post('/edit-category/:id', (req, res) => {
                             type: 'success',
                             message: 'Success editing Category!'
                         }
-                        
+
                         res.redirect('/admin/categories/edit-category/' + id);
                     });
                 });
@@ -271,7 +277,7 @@ router.get('/delete-category/:id', (req, res) => {
             return console.log(err);
 
         //update category global locals
-        Category.find( (err, categories) => {
+        Category.find((err, categories) => {
 
             if (err) {
                 console.log(err);

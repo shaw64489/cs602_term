@@ -1,7 +1,16 @@
+/*******************************
+********  Retrieve Modules  ****
+********************************/
+
+//use require keyword to refer and use express module
 const express = require('express');
+//define router
 const router = express.Router();
+//use require keyword to refer and use create directory module
 const mkdirp = require('mkdirp');
+//use require keyword to refer and use file system module
 const fs = require('fs-extra');
+//use require keyword to refer and use resize module
 const resizeImg = require('resize-img');
 
 /******************************
@@ -14,18 +23,18 @@ const Product = require('../models/product');
 // Get Category model
 const Category = require('../models/category');
 
+
 /*
  * GET products index
-*/
-
+ */
 router.get('/', (req, res) => {
 
     //used in view helper conditional statement
     let count = 0;
 
     //find product count
-    Product.count( (err, counting) => {
-        count = counting;
+    Product.count( (err, c) => {
+        count = c;
     });
 
 
@@ -67,8 +76,8 @@ router.get('/add-product', (req, res) => {
 });
 
 /*
-* Reference for image path
-* author: Vojislav Kovacevic
+* Reference for image path - resize image
+* author: James Halliday
 * 2017
 */
 

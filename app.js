@@ -1,21 +1,37 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+/*******************************
+********  Retrieve Modules  ****
+********************************/
+
+const express = require('express');
+//use require keyword to refer and use body parser module
+const bodyParser = require('body-parser');
 //use require keyword to refer and use handlebars module
 const handlebars = require('express-handlebars');
-var config = require('./config/database');
+//use require keyword to refer and use database module
+const config = require('./config/database');
+//use require keyword to refer and use mongoose module
 const mongoose = require('mongoose');
-var session = require('express-session');
+//use require keyword to refer and use sessions module
+const session = require('express-session');
+//use require keyword to refer and use validator module
 const expressValidator = require('express-validator');
-var fileUpload = require('express-fileupload');
+//use require keyword to refer and use file upload module
+const fileUpload = require('express-fileupload');
 //middleware module called Connect Mongo to add a Mongo session store
 //calling it passing our express session as an argument.
 //This lets the connect Mongo middleware access the sessions.
-var MongoStore = require('connect-mongo')(session);
-var path = require('path');
-var helpers = require('handlebars-helpers')();
+const MongoStore = require('connect-mongo')(session);
+//use require keyword to refer and use path module
+const path = require('path');
+//use require keyword to refer and use helpers module
+const helpers = require('handlebars-helpers')();
+
+/******************************
+********  Retrieve Models  ****
+******************************/
 
 //get Product model
-var PurchaseHistory = require('./models/purchase_history');
+const PurchaseHistory = require('./models/purchase_history');
 //retrieve Product model
 const Product = require('./models/product');
 //retrieve Product model
@@ -27,9 +43,9 @@ const app = express();
 
 //connection string that specifies the database
 mongoose.connect(config.database);
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
+db.once('open', () => {
     console.log('Connected to Mongo DB');
 });
 
@@ -65,7 +81,7 @@ app.use((req, res, next) => {
 //create session cart array - with product objects
 //make available everywhere
 // * for each get request
-app.get('*', function (req, res, next) {
+app.get('*', (req, res, next) => {
     //cart will be available in each get request
     res.locals.cart = req.session.cart;
     next();
@@ -125,10 +141,10 @@ app.engine('handlebars',
             sub: function (v1, v2) {
                 return v1 * v2;
             },
-            toFixed: function (number) {
+            toFixed: function (number)  {
                 return parseFloat(number).toFixed(2);
             },
-            var: function (name, value) {
+            var: function (name, value)  {
                 this[name] += value;
             }
 
@@ -142,18 +158,18 @@ app.engine('handlebars',
 app.set('view engine', 'handlebars');
 
 
-
 // set global errors variable
 app.locals.errors = null;
 
 //get category model
-var Category = require('./models/category');
+const Category = require('./models/category');
 
 // Get all categories to pass to header
-Category.find(function (err, categories) {
+Category.find((err, categories) => {
 
     if (err) {
         console.log(err);
+
     } else {
         //set global categories
         app.locals.categories = categories;
@@ -163,7 +179,7 @@ Category.find(function (err, categories) {
 
 
 /*
-    * Reference for validator
+    * Reference for validator - flash
     * author: Vojislav Kovacevic
     * 2017
 */
@@ -172,7 +188,7 @@ Category.find(function (err, categories) {
 
 //express messages middleware
 app.use(require('connect-flash')());
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     // if there's a flash message in the session request, make it available 
     // in the response, then delete it
     res.locals.sessionFlash = req.session.sessionFlash;
@@ -204,14 +220,15 @@ app.use(expressValidator({
 }));
 
 // include routes
-var routes = require('./routes/index');
-var adminCategories = require('./routes/admin_categories.js');
-var adminProducts = require('./routes/admin_products.js');
-var products = require('./routes/products.js');
-var cart = require('./routes/cart.js');
-var purchaseHistory = require('./routes/admin_purchaseHistory.js');
-var cusPurchaseHistory = require('./routes/purchaseHistory.js');
-//var api = require('./routes/rest.js');
+const routes = require('./routes/index');
+const adminCategories = require('./routes/admin_categories.js');
+const adminProducts = require('./routes/admin_products.js');
+const products = require('./routes/products.js');
+const cart = require('./routes/cart.js');
+const purchaseHistory = require('./routes/admin_purchaseHistory.js');
+const cusPurchaseHistory = require('./routes/purchaseHistory.js');
+const api = require('./routes/rest.js');
+
 
 //use
 app.use('/', routes);
@@ -221,69 +238,22 @@ app.use('/products', products);
 app.use('/cart', cart);
 app.use('/admin/history', purchaseHistory);
 app.use('/history', cusPurchaseHistory);
-//app.use('/api', api);
+app.use('/api', api);
 
-app.get('/api/products', (req, res) => {
-
-    let format = req.params.format;
-
-    var products = Product.find(function (err, products) {
-
-        res.format({
-
-            'application/json': () => {
-                console.log(products);
-                res.json(products);
-            },
-
- 
-            'application/xml': () => {
-
-                var productList = '<?xml version="1.0"?>\n';
-                productList +=  '<products>\n';
-
-                for (var i = 0; i < products.length; i++) {
-                    productList += 
-                    ' <product id="' + products[i].id + '">\n' +
-                    '<title>' + products[i].title + '</title>\n'
-                    + '<slug>' + products[i].slug + '</slug>\n'
-                    + '<desc>' + products[i].desc + '</desc>\n' 
-                    + '<price>' + products[i].price + '</price>\n' 
-                    + '<category>' + products[i].category + '</category>\n'  
-                    + '<image>' + products[i].image + '</image>\n' 
-                    + '<quantity>' + products[i].quantity + '</quantity>\n' 
-                    + '</product>\n';
-                }
-                productList += '</products>';
-                res.type('application/xml');
-                res.send(productList);
-            },
-
-            'default': () => {
-                res.status(404);
-                res.send("<b>404 - Not Found</b>");
-            }
-
-
-        });
-        
-    });
-
-});
 
 
 
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    var err = new Error('File Not Found');
+app.use( (req, res, next) => {
+    let err = new Error('File Not Found');
     err.status = 404;
     next(err);
 });
 
 // error handler
 // define as the last app.use callback
-app.use(function (err, req, res, next) {
+app.use( (err, req, res, next) => {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
@@ -292,18 +262,13 @@ app.use(function (err, req, res, next) {
 });
 
 
-
-/*
-
-curl -X GET -H "Accept:application/json" "http://localhost:3000/api/products"
-curl -X GET -H "Accept:application/xml" "http://localhost:3000/api/products"
-
-*/
-
 app.set('port', process.env.PORT || 3000);
 
 // listen on port 3000
-app.listen(app.get('port'), function () {
+app.listen(app.get('port'), () => {
     console.log('Express app listening on port 3000');
 });
+
+
+
 

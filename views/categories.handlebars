@@ -9,12 +9,17 @@
             </li>
             <!-- loop through categories and link to category -->
             {{#each categories}}
+
             <!-- pull slug and title for li and href -->
             <li class="list-group-item">
+                <!-- pull img for category 
+                <img class="prof-img img-circle hidden-xs-down" src="" alt="profile img">
+                /end-->
                 <a href="/products/{{this.slug}}">
                     {{this.title}}
                 </a>
             </li>
+
             {{/each}}
         </ul>
     </div>

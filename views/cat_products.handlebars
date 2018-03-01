@@ -27,7 +27,11 @@
 
     <div class="col-xs-12 col-md-4 p">
         <a class="pa" href="/products/{{this.category}}/{{this.slug}}">
-            <img class="pimage" src="/product_images/{{this.id}}/{{this.image}}" alt="">
+            {{#ifCond this.image '==' "" }}
+                <img id="pimage" src="/images/noimage.png" width="150" height="150">
+                {{else}}
+                <img class="pimage" src="/product_images/{{this.id}}/{{this.image}}" alt="">
+                {{/ifCond}}
         </a>
         <h3>{{this.title}}</h3>
         <h4>${{toFixed this.price}}</h4>
