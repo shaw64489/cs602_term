@@ -77,4 +77,8 @@ curl -X GET -H "Accept:application/xml" "http://localhost:3000/api/xml/price/1/5
 
 
 
-
+heroku login
+git init
+heroku git:remote -a shaw-app
+git add .
+git push heroku master

@@ -189,6 +189,9 @@ router.get('/buy/:user', (req, res) => {
     //retrieve user ID from request parameter
     let user = req.params.user;
 
+    //track orders submitted
+    let orders = 0;
+
     //loop through session cart
     for (let i = 0; i < req.session.cart.length; i++) {
 
@@ -210,17 +213,12 @@ router.get('/buy/:user', (req, res) => {
             //if user tries to buy quantity that exceeds amount left
             if (product.quantity < 0) {
 
-                //flash message of error and do not submit order
-                req.session.sessionFlash = {
-                    type: 'error',
-                    message: 'Order exceeds inventory remaining!'
-                }
+               orders = 0;
 
-                //redirect to user profile
-                res.redirect('../../profile');
-
-            //if user buys last remaining product
+                //if user buys last remaining product
             } else if (product.quantity == 0) {
+
+               orders += 1;
 
                 let name = "";
 
@@ -261,29 +259,21 @@ router.get('/buy/:user', (req, res) => {
                             //remove product from db
                             Product.findByIdAndRemove(product._id, function (err) {
                                 console.log(err);
+
+
+
                             });
 
-
-
-                            //flash message of successful order submission
-                            req.session.sessionFlash = {
-                                type: 'success',
-                                message: 'You bought the last one!'
-                            }
-
-                            //delete current cart session
-                            delete req.session.cart;
-
-                            //redirect to user profile
-                            res.redirect('../../profile');
                         }
 
                     });
 
                 });
 
-            //inventory left - proceed normally
+                //inventory left - proceed normally
             } else {
+
+                orders += 1;
 
                 //save update
                 product.save(function (err) {
@@ -318,19 +308,9 @@ router.get('/buy/:user', (req, res) => {
                         if (err)
                             return console.log(err);
 
+
                     });
 
-                    //flash message of successful order submission
-                    req.session.sessionFlash = {
-                        type: 'success',
-                        message: 'Order has been submitted!'
-                    }
-
-                    //delete current cart session
-                    delete req.session.cart;
-
-                    //redirect to user profile
-                    res.redirect('../../profile');
 
 
                 });
@@ -339,6 +319,21 @@ router.get('/buy/:user', (req, res) => {
         });
 
     }
+
+
+    //flash message set
+    req.session.sessionFlash = {
+        type: "info",
+        message: "Please check history for info on order submission. If no history, quantity value was too high."
+    }
+
+    //delete current cart session
+    delete req.session.cart;
+
+    //redirect to user profile
+    res.redirect('../../profile');
+
+
 
 });
 
